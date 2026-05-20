@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Personal - Doctor</title>
+    <link rel="icon" href="https://i.ibb.co/WNVMdWcm/Whats-App-Image-2025-10-27-at-2-50-55-PM.jpg" type="image/jpeg">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --danger-color: #dc3545;
+            --danger-dark: #c82333;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            overflow: hidden;
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 20px;
+            height: 100%;
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 2px solid rgba(255, 255, 255, 0.2);
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+
+        .sidebar header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .sidebar header img {
+            display: block;
+            margin: 0 auto 15px;
+            max-width: 100px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            transition: background 0.3s ease, transform 0.2s ease;
+            font-weight: 500;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.03);
+        }
+
+        .sidebar a i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .sidebar .logout a {
+            background-color: var(--danger-color);
+        }
+
+        .sidebar .logout a:hover {
+            background-color: var(--danger-dark);
+        }
+
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+            border-left: 4px solid #ffffff;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 40px;
+            background-color: #f8f9fa;
+            flex: 1;
+            overflow-y: auto;
+            transition: margin-left 0.3s ease;
+        }
+
+        h2 {
+            margin-bottom: 30px;
+            font-weight: 500;
+            color: var(--primary-dark);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-dark);
+            border-radius: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease, transform 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: fixed;
+                transform: translateX(-100%);
+                z-index: 1001;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 20px;
+                padding-top: 60px;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+            }
+
+            .overlay.show {
+                display: block;
+            }
+        }
+
+        .menu-toggle {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+                position: fixed;
+                top: 10px;
+                left: 10px;
+                z-index: 1002;
+                background-color: var(--primary-color);
+                color: white;
+                border: none;
+                padding: 10px;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+            max-width: 400px;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        /* Estilos para la pantalla de bienvenida */
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .welcome-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+        }
+
+        .welcome-message {
+            font-size: 1.1rem;
+            color: #6c757d;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Estilos para la sección de predicción */
+        .prediction-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .prediction-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .prediction-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-right: 15px;
+        }
+
+        .prediction-title {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            margin: 0;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+        }
+
+        .form-section-title {
+            font-size: 1.2rem;
+            color: #495057;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #dee2e6;
+        }
+
+        .prediction-result {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-high {
+            color: var(--success-color);
+            font-weight: bold;
+        }
+
+        .result-medium {
+            color: var(--warning-color);
+            font-weight: bold;
+        }
+
+        .result-low {
+            color: var(--danger-color);
+            font-weight: bold;
+        }
+
+        /* MEJORAS PARA LA BARRA DE PROGRESO */
+        .progress {
+            height: 25px;
+            margin: 15px 0;
+            background-color: #e9ecef;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-bar {
+            transition: width 1s ease-in-out;
+            border-radius: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            font-size: 0.9rem;
+        }
+
+        /* Colores específicos para cada nivel */
+        .progress-bar.bg-success {
+            background: linear-gradient(45deg, #28a745, #20c997) !important;
+        }
+
+        .progress-bar.bg-warning {
+            background: linear-gradient(45deg, #ffc107, #fd7e14) !important;
+        }
+
+        .progress-bar.bg-danger {
+            background: linear-gradient(45deg, #dc3545, #e83e8c) !important;
+        }
+
+        .factor-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.85rem;
+        }
+
+        .factor-positive {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .factor-negative {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .factor-neutral {
+            background-color: #e2e3e5;
+            color: #383d41;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        /* Modal de confirmación de cierre de sesión */
+        .modal-confirm {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-confirm-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-confirm-content h3 {
+            color: #dc3545;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .modal-confirm-content p {
+            color: #6c757d;
+            margin-bottom: 25px;
+            font-size: 1rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .modal-btn-cancel {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .modal-btn-cancel:hover {
+            background-color: #5a6268;
+        }
+
+        .modal-btn-confirm {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .modal-btn-confirm:hover {
+            background-color: #c82333;
+        }
+
+        @media (max-width: 768px) {
+            .modal-confirm-content {
+                margin: 20% auto;
+                width: 95%;
+            }
+        }
+
+        /* Estilos para debug */
+        .debug-info {
+            font-size: 0.8rem;
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+
+        /* Tab transitions */
+        .tab-pane {
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Enhanced sidebar nav links */
+        .sidebar .nav-link {
+            border-radius: 8px;
+            margin-bottom: 4px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .sidebar .nav-link.active,
+        .sidebar .nav-link[style*="font-weight: bold"] {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Sidebar header logo animation */
+        .sidebar header img {
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar header img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Dashboard Power BI - ESTILOS CORREGIDOS */
+        .dashboard-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+            /* Proporción 16:9 */
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            background-color: #f0f2f5;
+            margin: 20px 0;
+        }
+
+        .dashboard-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            border: none;
+            border-radius: 15px;
+        }
+
+        /* Asegurar que el tab-pane muestre correctamente el contenido */
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div class="sidebar" id="sidebar">
+        <header>
+            <img src="https://i.ibb.co/WNVMdWcm/Whats-App-Image-2025-10-27-at-2-50-55-PM.jpg" alt="Logo">
+            <h4><b>Gestión Personal</b></h4>
+        </header>
+        <nav class="nav flex-column">
+            <a class="nav-link" href="/citas/verCitas">
+                <i class="bi bi-calendar-check"></i> Ver Citas
+            </a>
+            <a class="nav-link" href="#" onclick="showTab('pacientes')">
+                <i class="bi bi-person-lines-fill"></i> Ver Pacientes
+            </a>
+            <a class="nav-link" href="/historial">
+                <i class="bi bi-journal-medical"></i> Historial Médico
+            </a>
+            <a class="nav-link" href="/consulta">
+                <i class="bi bi-search"></i> Buscar Historial Médico
+            </a>
+            <!-- Nueva opción de Predicción -->
+            <a class="nav-link" href="#" onclick="showTab('prediccion')">
+                <i class="bi bi-graph-up"></i> Predicción de Adherencia
+            </a>
+            <!-- Asistente IA MCP para Doctores -->
+            <a class="nav-link" href="#" onclick="showTab('chatMCP')">
+                <i class="bi bi-robot"></i> Asistente IA (Citas)
+            </a>
+            <!-- ✅ CORREGIDO: Dashboard NutriVida usa showTab() en lugar de data-bs-toggle -->
+            <a class="nav-link" href="#" onclick="showTab('dashboardPowerBI')">
+                <i class="bi bi-graph-up"></i> Dashboard NutriVida
+            </a>
+        </nav>
+        <div class="logout">
+            <a href="#" onclick="confirmLogout(event)" class="btn btn-danger w-100">
+                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+            </a>
+        </div>
+    </div>
+
+    <!-- Modal de confirmación de cierre de sesión -->
+    <div id="logoutModal" class="modal-confirm">
+        <div class="modal-confirm-content">
+            <i class="bi bi-exclamation-triangle" style="font-size: 3rem; color: #dc3545; margin-bottom: 15px;"></i>
+            <h3>¿Cerrar Sesión?</h3>
+            <p>¿Estás seguro de que deseas salir del sistema?<br>Tendrás que iniciar sesión nuevamente para acceder.</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeLogoutModal()">
+                    Cancelar
+                </button>
+                <button class="modal-btn modal-btn-confirm" onclick="performLogout()">
+                    Sí, Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- Pantalla de bienvenida -->
+        <div id="welcomeScreen" class="welcome-screen">
+            <div class="welcome-icon">
+                <i class="bi bi-heart-pulse"></i>
+            </div>
+            <h1 class="welcome-title">Bienvenido, Doctor</h1>
+            <p class="welcome-message">
+                Seleccione una opción del menú lateral para comenzar a gestionar su consulta médica.
+                Puede ver citas programadas, revisar información de pacientes, acceder a historiales médicos,
+                realizar búsquedas específicas o utilizar nuestro modelo de predicción de adherencia a planes
+                nutricionales.
+            </p>
+        </div>
+
+        <!-- Contenido de las pestañas -->
+        <div class="tab-content" id="tabContent">
+            <div id="pacientes" class="tab-pane">
+                <h2>Lista de Pacientes</h2>
+
+                <!-- BUSCADOR CON PAGINACIÓN AJAX -->
+                <div class="search-container" style="max-width: 500px;">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" id="searchInput" class="form-control"
+                            placeholder="Buscar pacientes por nombre, apellido o email...">
+                    </div>
+                </div>
+
+                <div id="paginationInfo" class="text-muted mt-2 mb-2" style="font-size: 0.9rem;"></div>
+
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody id="patientsTableBody">
+                        <tr>
+                            <td colspan="4" class="text-center py-3"><i class="bi bi-arrow-clockwise"></i> Cargando
+                                pacientes...</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Controles de paginación -->
+                <nav id="paginationControls" aria-label="Navegación de pacientes">
+                    <ul class="pagination justify-content-center" id="paginationList"></ul>
+                </nav>
+            </div>
+
+            <!-- Nueva pestaña de Predicción -->
+            <div id="prediccion" class="tab-pane">
+                <div class="prediction-card">
+                    <div class="prediction-header">
+                        <div class="prediction-icon">
+                            <i class="bi bi-graph-up"></i>
+                        </div>
+                        <h2 class="prediction-title">Predicción de Adherencia a Plan Nutricional</h2>
+                    </div>
+
+                    <p class="mb-4">
+                        Este modelo predictivo analiza diversos factores para determinar la probabilidad de que un
+                        paciente mantenga o abandone su plan nutricional.
+                        Complete la información del paciente para obtener una predicción.
+                    </p>
+
+                    <form id="predictionForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-section">
+                                    <h4 class="form-section-title">Información del Paciente</h4>
+
+                                    <div class="mb-3">
+                                        <label for="patientSelect" class="form-label">Seleccionar Paciente</label>
+                                        <select class="form-select" id="patientSelect">
+                                            <option value="">-- Seleccione un paciente --</option>
+                                            <option value="1">Juan Pérez (ID: 001)</option>
+                                            <option value="2">María García (ID: 002)</option>
+                                            <option value="3">Carlos López (ID: 003)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="age" class="form-label">Edad</label>
+                                        <input type="number" class="form-control" id="age" min="18" max="100">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Género</label>
+                                        <div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="gender" id="male"
+                                                    value="male">
+                                                <label class="form-check-label" for="male">Masculino</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="gender" id="female"
+                                                    value="female">
+                                                <label class="form-check-label" for="female">Femenino</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-section">
+                                    <h4 class="form-section-title">Factores de Comportamiento</h4>
+
+                                    <div class="mb-3">
+                                        <label for="motivation" class="form-label">Nivel de Motivación Inicial</label>
+                                        <select class="form-select" id="motivation">
+                                            <option value="">-- Seleccione nivel --</option>
+                                            <option value="high">Alto</option>
+                                            <option value="medium">Medio</option>
+                                            <option value="low">Bajo</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="previousDiets" class="form-label">Intentos Previos de Dieta</label>
+                                        <input type="number" class="form-control" id="previousDiets" min="0" max="20">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="supportSystem" class="form-label">Sistema de Apoyo</label>
+                                        <select class="form-select" id="supportSystem">
+                                            <option value="">-- Seleccione nivel --</option>
+                                            <option value="strong">Fuerte (familia/amigos)</option>
+                                            <option value="moderate">Moderado</option>
+                                            <option value="weak">Débil o inexistente</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-section">
+                                    <h4 class="form-section-title">Factores de Estilo de Vida</h4>
+
+                                    <div class="mb-3">
+                                        <label for="activityLevel" class="form-label">Nivel de Actividad Física</label>
+                                        <select class="form-select" id="activityLevel">
+                                            <option value="">-- Seleccione nivel --</option>
+                                            <option value="high">Alto (5+ veces/semana)</option>
+                                            <option value="moderate">Moderado (3-4 veces/semana)</option>
+                                            <option value="low">Bajo (0-2 veces/semana)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="stressLevel" class="form-label">Nivel de Estrés</label>
+                                        <select class="form-select" id="stressLevel">
+                                            <option value="">-- Seleccione nivel --</option>
+                                            <option value="low">Bajo</option>
+                                            <option value="moderate">Moderado</option>
+                                            <option value="high">Alto</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-section">
+                                    <h4 class="form-section-title">Factores Nutricionales</h4>
+
+                                    <div class="mb-3">
+                                        <label for="dietComplexity" class="form-label">Complejidad del Plan</label>
+                                        <select class="form-select" id="dietComplexity">
+                                            <option value="">-- Seleccione nivel --</option>
+                                            <option value="simple">Simple</option>
+                                            <option value="moderate">Moderada</option>
+                                            <option value="complex">Compleja</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="foodPreferences" class="form-label">Afinidad con el Plan</label>
+                                        <select class="form-select" id="foodPreferences">
+                                            <option value="">-- Seleccione nivel --</option>
+                                            <option value="high">Alta (le gusta la comida)</option>
+                                            <option value="moderate">Moderada</option>
+                                            <option value="low">Baja (no le gusta la comida)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="calculatePrediction()">
+                                <i class="bi bi-calculator"></i> Calcular Predicción
+                            </button>
+                            <button type="reset" class="btn btn-outline-secondary btn-lg ms-2">
+                                <i class="bi bi-arrow-clockwise"></i> Limpiar Formulario
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Resultados de la predicción -->
+                    <div id="predictionResult" class="prediction-result">
+                        <h4 class="mb-3">Resultado de la Predicción</h4>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5>Probabilidad de Adherencia: <span id="resultPercentage">0%</span></h5>
+                                <div class="progress">
+                                    <div id="resultProgress" class="progress-bar" role="progressbar" style="width: 0%">
+                                    </div>
+                                </div>
+                                <p id="resultDescription" class="mt-2"></p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div id="resultIcon" style="font-size: 3rem;"></div>
+                                <div id="resultLevel" class="mt-2 fw-bold"></div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <h6>Factores Clave Identificados:</h6>
+                            <div id="keyFactors"></div>
+                        </div>
+
+                        <div class="mt-4">
+                            <h6>Recomendaciones:</h6>
+                            <ul id="recommendations" class="list-group"></ul>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pestaña Chat MCP para Doctores -->
+            <div id="chatMCP" class="tab-pane">
+                <div class="prediction-card">
+                    <div class="prediction-header">
+                        <div class="prediction-icon">
+                            <i class="bi bi-robot"></i>
+                        </div>
+                        <div>
+                            <h2 class="prediction-title" style="margin-bottom: 4px;">Asistente IA — Gestión de Citas
+                                (MCP)</h2>
+                            <p style="color: #6c757d; margin: 0; font-size: 0.9rem;">Gestione citas médicas con lenguaje
+                                natural. El agente IA ejecutará la acción correspondiente.</p>
+                        </div>
+                    </div>
+
+                    <!-- ═══ TARJETAS DE ACCIONES CRUD ═══ -->
+                    <div class="row g-3 mb-4">
+                        <!-- 📋 VER CITAS -->
+                        <div class="col-md-6 col-lg-3">
+                            <div style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 14px; padding: 18px; height: 100%; border: 1px solid #90caf9; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;"
+                                onmouseenter="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(33,150,243,0.2)'"
+                                onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                                    <div
+                                        style="width: 42px; height: 42px; background: linear-gradient(135deg, #1976d2, #1565c0); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                        <i class="bi bi-calendar-check" style="font-size: 1.2rem; color: white;"></i>
+                                    </div>
+                                    <h6 style="margin: 0; color: #1565c0; font-weight: 600;">Ver Citas</h6>
+                                </div>
+                                <p style="font-size: 0.78rem; color: #546e7a; margin-bottom: 10px;">Consulte sus citas,
+                                    las de un paciente o todas las del sistema.</p>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <button class="btn btn-sm"
+                                        style="background: rgba(25,118,210,0.12); color: #1565c0; border: 1px solid rgba(25,118,210,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                        onclick="usarEjemplo('Muéstrame mis citas programadas')">
+                                        📋 Mis citas
+                                    </button>
+                                    <button class="btn btn-sm"
+                                        style="background: rgba(25,118,210,0.12); color: #1565c0; border: 1px solid rgba(25,118,210,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                        onclick="usarEjemplo('¿Qué citas tengo hoy?')">
+                                        📅 Citas de hoy
+                                    </button>
+                                    <button class="btn btn-sm"
+                                        style="background: rgba(25,118,210,0.12); color: #1565c0; border: 1px solid rgba(25,118,210,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                        onclick="usarEjemplo('Muéstrame todas las citas del sistema')">
+                                        🏥 Todas las citas
+                                    </button>
+                                    <button class="btn btn-sm"
+                                        style="background: rgba(25,118,210,0.12); color: #1565c0; border: 1px solid rgba(25,118,210,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                        onclick="usarEjemplo('Ver cita 1')">
+                                        🔍 Ver cita ID 1
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ➕ CREAR CITA -->
+                        <div class="col-md-6 col-lg-3">
+                            <div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 14px; padding: 18px; height: 100%; border: 1px solid #a5d6a7; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;"
+                                onmouseenter="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(76,175,80,0.2)'"
+                                onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                                    <div
+                                        style="width: 42px; height: 42px; background: linear-gradient(135deg, #388e3c, #2e7d32); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                        <i class="bi bi-plus-circle" style="font-size: 1.2rem; color: white;"></i>
+                                    </div>
+                                    <h6 style="margin: 0; color: #2e7d32; font-weight: 600;">Crear Cita</h6>
+                                </div>
+                                <p style="font-size: 0.78rem; color: #546e7a; margin-bottom: 10px;">Agende una nueva
+                                    cita indicando email, fecha, hora y lugar.</p>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <button class="btn btn-sm"
+                                        style="background: rgba(56,142,60,0.12); color: #2e7d32; border: 1px solid rgba(56,142,60,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                        onclick="usarEjemplo('Crear cita para paciente@email.com el 2026-06-15 10:00 en Consultorio A')">
+                                        ➕ Crear ejemplo
+                                    </button>
+                                    <button class="btn btn-sm"
+                                        style="background: rgba(56,142,60,0.12); color: #2e7d32; border: 1px solid rgba(56,142,60,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                        onclick="usarEjemplo('Agendar cita para juan@correo.com el 2026-07-01 14:30 en Consultorio B')">
+                                        📝 Otro ejemplo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ✏️ MODIFICAR CITA -->
+                        <div class="col-md-6 col-lg-3">
+                            <div style="background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 14px; padding: 18px; height: 100%; border: 1px solid #ffcc80; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;"
+                                onmouseenter="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(255,152,0,0.2)'"
+                                onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                                    <div
+                                        style="width: 42px; height: 42px; background: linear-gradient(135deg, #f57c00, #e65100); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                        <i class="bi bi-pencil-square" style="font-size: 1.2rem; color: white;"></i>
+                                    </div>
+                                    <h6 style="margin: 0; color: #e65100; font-weight: 600;">Modificar Cita</h6>
+                                </div>
+                                <p style="font-size: 0.78rem; color: #546e7a; margin-bottom: 10px;">Cambie la fecha,
+                                    hora o lugar de una cita existente.</p>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <button class="btn btn-sm"
+                                        style="background: rgba(245,124,0,0.12); color: #e65100; border: 1px solid rgba(245,124,0,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                        onclick="usarEjemplo('Actualizar cita 5 para el 2026-06-20 14:00 en Consultorio B')">
+                                        ✏️ Cambiar fecha
+                                    </button>
+                                    <button class="btn btn-sm"
+                                        style="background: rgba(245,124,0,0.12); color: #e65100; border: 1px solid rgba(245,124,0,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                        onclick="usarEjemplo('Reprogramar cita 3 para el 2026-07-10 09:00 en Sala Norte')">
+                                        🔄 Reprogramar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 🗑️ ELIMINAR CITA -->
+                        <div class="col-md-6 col-lg-3">
+                            <div style="background: linear-gradient(135deg, #fce4ec, #f8bbd0); border-radius: 14px; padding: 18px; height: 100%; border: 1px solid #f48fb1; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;"
+                                onmouseenter="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(233,30,99,0.2)'"
+                                onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                                    <div
+                                        style="width: 42px; height: 42px; background: linear-gradient(135deg, #e53935, #c62828); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                        <i class="bi bi-trash3" style="font-size: 1.2rem; color: white;"></i>
+                                    </div>
+                                    <h6 style="margin: 0; color: #c62828; font-weight: 600;">Eliminar Cita</h6>
+                                </div>
+                                <p style="font-size: 0.78rem; color: #546e7a; margin-bottom: 10px;">Cancele y elimine
+                                    una cita indicando su número de ID.</p>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <button class="btn btn-sm"
+                                        style="background: rgba(229,57,53,0.12); color: #c62828; border: 1px solid rgba(229,57,53,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                        onclick="usarEjemplo('Eliminar cita 5')">
+                                        🗑️ Eliminar ID 5
+                                    </button>
+                                    <button class="btn btn-sm"
+                                        style="background: rgba(229,57,53,0.12); color: #c62828; border: 1px solid rgba(229,57,53,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                        onclick="usarEjemplo('Cancelar cita 10')">
+                                        ❌ Cancelar ID 10
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ═══ ÁREA DE CHAT ═══ -->
+                    <div id="doctorChatBox"
+                        style="border: 1px solid #dee2e6; border-radius: 14px; height: calc(100vh - 580px); min-height: 250px; overflow-y: auto; padding: 20px; background: linear-gradient(180deg, #f0f4f8 0%, #ffffff 100%); margin-bottom: 15px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.04);">
+                        <div style="text-align: center; color: #adb5bd; padding: 30px;">
+                            <div
+                                style="width: 64px; height: 64px; background: linear-gradient(135deg, #007bff, #0056b3); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 4px 15px rgba(0,123,255,0.3);">
+                                <i class="bi bi-chat-dots" style="font-size: 1.6rem; color: white;"></i>
+                            </div>
+                            <p class="mt-2" style="font-size: 1rem; font-weight: 500; color: #6c757d;">Seleccione una
+                                acción o escriba su consulta</p>
+                            <p style="font-size: 0.82rem; color: #adb5bd;">Puede ver, crear, modificar o eliminar citas
+                                desde aquí</p>
+                        </div>
+                    </div>
+
+                    <!-- ═══ BARRA DE ENTRADA ═══ -->
+                    <div class="input-group"
+                        style="box-shadow: 0 2px 10px rgba(0,0,0,0.08); border-radius: 25px; overflow: hidden;">
+                        <input type="text" id="doctorMensaje" class="form-control"
+                            placeholder="Escriba su consulta sobre citas... (ej: 'Mis citas', 'Crear cita para...')"
+                            onkeypress="if(event.key==='Enter') enviarMensajeDoctor()"
+                            style="border-radius: 25px 0 0 25px; border: 2px solid #dee2e6; border-right: none; padding: 12px 20px; font-size: 0.95rem;">
+                        <button class="btn btn-primary" onclick="enviarMensajeDoctor()"
+                            style="border-radius: 0 25px 25px 0; padding: 12px 24px; font-weight: 500; background: linear-gradient(135deg, #007bff, #0056b3); border: none;">
+                            <i class="bi bi-send-fill"></i> Enviar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ✅ DASHBOARD POWER BI CORREGIDO -->
+            <div id="dashboardPowerBI" class="tab-pane">
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <h2 style="color: #0056b3; border-bottom: none;">📊 Dashboard Nutri Vida</h2>
+                    <p style="color: #6c757d;">Visualiza métricas clave sobre los usuarios, estadísticas y tendencias en
+                        nuestra comunidad.</p>
+                </div>
+                <div class="dashboard-container">
+                    <iframe
+                        src="https://app.powerbi.com/view?r=eyJrIjoiMzM3NzhiNTUtZTE3MS00ZWMxLTg2MTEtNTIyYTk1ZTgxYjFmIiwidCI6IjlkMTJiZjNmLWU0ZjYtNDdhYi05MTJmLTFhMmYwZmM0OGFhNCIsImMiOjR9"
+                        allowFullScreen="true">
+                    </iframe>
+                </div>
+                <p class="text-muted text-center mt-3" style="font-size: 0.85rem; color: #6c757d;">
+                    <i class="bi bi-info-circle"></i> Los datos se actualizan automáticamente desde nuestra base de
+                    datos.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Funciones para el modal de cierre de sesión
+        function confirmLogout(event) {
+            event.preventDefault();
+            document.getElementById('logoutModal').style.display = 'block';
+        }
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'none';
+        }
+
+        function performLogout() {
+            window.location.href = '/logout';
+        }
+
+        // Cerrar modal al hacer clic fuera de él
+        window.onclick = function (event) {
+            const modal = document.getElementById('logoutModal');
+            if (event.target === modal) {
+                closeLogoutModal();
+            }
+        }
+
+        // Cerrar modal con tecla Escape
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closeLogoutModal();
+            }
+        });
+
+        // Mostrar la pantalla de bienvenida al cargar la página
+        document.addEventListener('DOMContentLoaded', function () {
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            const tabContent = document.getElementById('tabContent');
+
+            // Verificar parámetros URL (desde otras páginas como sidebar links)
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlTab = urlParams.get('tab');
+
+            if (urlTab) {
+                // Si hay parámetro ?tab=, mostrar ese tab directamente
+                showTab(urlTab);
+            } else {
+                // Por defecto: siempre mostrar pantalla de bienvenida
+                welcomeScreen.style.display = 'flex';
+                tabContent.style.display = 'none';
+            }
+
+            // Configurar event listeners para los enlaces del menú
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.addEventListener('click', function () {
+                    // Remover clase active de todos los enlaces
+                    document.querySelectorAll('.sidebar .nav-link').forEach(item => {
+                        item.classList.remove('active');
+                    });
+
+                    // Agregar clase active al enlace clickeado
+                    this.classList.add('active');
+
+                    // En móviles, cerrar el menú después de hacer clic
+                    if (window.innerWidth <= 768) {
+                        toggleMenu();
+                    }
+                });
+            });
+
+            // Inicializar búsqueda de pacientes con paginación AJAX
+            initializePatientSearch();
+        });
+
+        // ===== SISTEMA DE PAGINACIÓN AJAX PARA PACIENTES =====
+        let currentPage = 0;
+        let currentSearch = '';
+        let searchTimeout = null;
+        const PAGE_SIZE = 20;
+        // Cache para evitar recargar datos al cambiar entre pestañas
+        const patientsCache = {};
+
+        function initializePatientSearch() {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function () {
+                    // Debounce: esperar 300ms después de que el usuario deje de teclear
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        currentSearch = this.value.trim();
+                        currentPage = 0;
+                        loadPatients();
+                    }, 300);
+                });
+            }
+            // Cargar la primera página
+            loadPatients();
+        }
+
+        async function loadPatients() {
+            const tableBody = document.getElementById('patientsTableBody');
+            const paginationInfo = document.getElementById('paginationInfo');
+
+            if (!tableBody) return;
+
+            // Verificar cache
+            const cacheKey = `${currentPage}_${currentSearch}`;
+            if (patientsCache[cacheKey]) {
+                renderPatients(patientsCache[cacheKey]);
+                return;
+            }
+
+            // Mostrar indicador de carga
+            tableBody.innerHTML = '<tr><td colspan="4" class="text-center py-3"><i class="bi bi-arrow-clockwise"></i> Cargando...</td></tr>';
+
+            try {
+                const url = `/api/usuarios/rol/1?page=${currentPage}&size=${PAGE_SIZE}&search=${encodeURIComponent(currentSearch)}`;
+                const response = await fetch(url);
+
+                if (!response.ok) throw new Error('Error al cargar pacientes');
+
+                const data = await response.json();
+
+                // Guardar en cache
+                patientsCache[cacheKey] = data;
+
+                renderPatients(data);
+
+            } catch (error) {
+                console.error('Error cargando pacientes:', error);
+                tableBody.innerHTML = '<tr><td colspan="4" class="text-center py-3 text-danger">Error al cargar pacientes. Intente de nuevo.</td></tr>';
+            }
+        }
+
+        function renderPatients(data) {
+            const tableBody = document.getElementById('patientsTableBody');
+            const paginationInfo = document.getElementById('paginationInfo');
+
+            // Renderizar filas
+            if (data.content && data.content.length > 0) {
+                tableBody.innerHTML = data.content.map(u => `
+            <tr>
+                <td>${u.id}</td>
+                <td>${u.nombre || ''}</td>
+                <td>${u.apellido || ''}</td>
+                <td>${u.email || ''}</td>
+            </tr>
+        `).join('');
+            } else {
+                tableBody.innerHTML = '<tr><td colspan="4" class="text-center py-3">No se encontraron pacientes</td><tr>';
+            }
+
+            // Mostrar info de paginación
+            if (paginationInfo) {
+                const start = data.number * data.size + 1;
+                const end = Math.min(start + data.numberOfElements - 1, data.totalElements);
+                paginationInfo.textContent = data.totalElements > 0
+                    ? `Mostrando ${start}-${end} de ${data.totalElements} pacientes`
+                    : 'Sin resultados';
+            }
+
+            // Renderizar controles de paginación
+            renderPagination(data);
+        }
+
+        function renderPagination(data) {
+            const paginationList = document.getElementById('paginationList');
+            if (!paginationList || data.totalPages <= 1) {
+                if (paginationList) paginationList.innerHTML = '';
+                return;
+            }
+
+            let html = '';
+
+            // Botón anterior
+            html += `<li class="page-item ${data.first ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="goToPage(${data.number - 1}); return false;">&laquo;</a>
+    </li>`;
+
+            // Números de página (máximo 5 visibles)
+            const startPage = Math.max(0, data.number - 2);
+            const endPage = Math.min(data.totalPages - 1, startPage + 4);
+
+            if (startPage > 0) {
+                html += `<li class="page-item"><a class="page-link" href="#" onclick="goToPage(0); return false;">1</a></li>`;
+                if (startPage > 1) html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<li class="page-item ${i === data.number ? 'active' : ''}">
+            <a class="page-link" href="#" onclick="goToPage(${i}); return false;">${i + 1}</a>
+        </li>`;
+            }
+
+            if (endPage < data.totalPages - 1) {
+                if (endPage < data.totalPages - 2) html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                html += `<li class="page-item"><a class="page-link" href="#" onclick="goToPage(${data.totalPages - 1}); return false;">${data.totalPages}</a></li>`;
+            }
+
+            // Botón siguiente
+            html += `<li class="page-item ${data.last ? 'disabled' : ''}">
+        <a class="page-link" href="#" onclick="goToPage(${data.number + 1}); return false;">&raquo;</a>
+    </li>`;
+
+            paginationList.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            loadPatients();
+            // Scroll al inicio de la tabla
+            document.getElementById('pacientes')?.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Función para alternar el menú en dispositivos móviles
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+
+            if (!sidebar || !overlay) return;
+
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+
+            // Prevenir scroll del body cuando el menú está abierto
+            document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : 'auto';
+        }
+
+        // MODIFICADA: Función para mostrar una pestaña específica
+        function showTab(tabId) {
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            const tabContentDiv = document.getElementById('tabContent');
+            const allTabs = document.querySelectorAll('.tab-pane');
+
+            if (!welcomeScreen || !tabContentDiv) return;
+
+            // Ocultar pantalla de bienvenida
+            welcomeScreen.style.display = 'none';
+
+            // Mostrar contenido de pestañas
+            tabContentDiv.style.display = 'block';
+
+            // Ocultar todas las pestañas
+            allTabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Mostrar la pestaña seleccionada
+            const selectedTab = document.getElementById(tabId);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            } else {
+                console.error('Tab no encontrada:', tabId);
+            }
+        }
+
+        // ✅ NUEVA FUNCIÓN: Conectada al modelo WEKA real (backend)
+        async function calculatePrediction() {
+            // Validar formulario primero
+            if (!validatePredictionForm()) {
+                return;
+            }
+
+            // Obtener datos del formulario
+            const data = getFormData();
+
+            try {
+                // Mostrar indicador de carga
+                showLoadingIndicator(true);
+
+                const response = await fetch('/api/prediccion/calcular', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error del servidor: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+
+                // Mostrar resultados
+                displayWekaPredictionResult(result);
+
+            } catch (error) {
+                console.error('❌ Error:', error);
+                showAlert('Error al conectarse con el servidor: ' + error.message);
+            } finally {
+                // Ocultar indicador de carga
+                showLoadingIndicator(false);
+            }
+        }
+
+        // Función para validar el formulario de predicción
+        function validatePredictionForm() {
+            const requiredFields = [
+                'patientSelect', 'age', 'motivation', 'previousDiets', 'supportSystem',
+                'activityLevel', 'stressLevel', 'dietComplexity', 'foodPreferences'
+            ];
+
+            for (const fieldId of requiredFields) {
+                const field = document.getElementById(fieldId);
+                if (!field || !field.value) {
+                    showAlert('Por favor, complete todos los campos del formulario.');
+                    field?.focus();
+                    return false;
+                }
+            }
+
+            // Validar género
+            const gender = document.querySelector('input[name="gender"]:checked');
+            if (!gender) {
+                showAlert('Por favor, seleccione el género del paciente.');
+                return false;
+            }
+
+            // Validar edad
+            const age = parseInt(document.getElementById('age').value);
+            if (age < 1 || age > 120) {
+                showAlert('Por favor, ingrese una edad válida (1-120 años).');
+                document.getElementById('age').focus();
+                return false;
+            }
+
+            // Validar intentos previos de dieta
+            const previousDiets = parseInt(document.getElementById('previousDiets').value);
+            if (previousDiets < 0 || previousDiets > 50) {
+                showAlert('Por favor, ingrese un número válido de intentos previos (0-50).');
+                document.getElementById('previousDiets').focus();
+                return false;
+            }
+
+            return true;
+        }
+
+        // Función para obtener datos del formulario
+        function getFormData() {
+            return {
+                patientId: document.getElementById('patientSelect').value,
+                age: parseInt(document.getElementById('age').value),
+                gender: document.querySelector('input[name="gender"]:checked').value,
+                motivation: document.getElementById('motivation').value,
+                previousDiets: parseInt(document.getElementById('previousDiets').value),
+                supportSystem: document.getElementById('supportSystem').value,
+                activityLevel: document.getElementById('activityLevel').value,
+                stressLevel: document.getElementById('stressLevel').value,
+                dietComplexity: document.getElementById('dietComplexity').value,
+                foodPreferences: document.getElementById('foodPreferences').value
+            };
+        }
+
+        // Función para mostrar alertas
+        function showAlert(message) {
+            alert(message);
+        }
+
+        // Función para mostrar/ocultar indicador de carga
+        function showLoadingIndicator(show) {
+            let loadingIndicator = document.getElementById('loadingIndicator');
+
+            if (show) {
+                if (!loadingIndicator) {
+                    loadingIndicator = document.createElement('div');
+                    loadingIndicator.id = 'loadingIndicator';
+                    loadingIndicator.innerHTML = `
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 9999;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <span class="ms-2 text-white">Calculando predicción...</span>
+                </div>
+            `;
+                    document.body.appendChild(loadingIndicator);
+                }
+            } else {
+                if (loadingIndicator) {
+                    loadingIndicator.remove();
+                }
+            }
+        }
+
+        // ✅ FUNCIÓN ACTUALIZADA: Para mostrar resultados de WEKA
+        function displayWekaPredictionResult(result) {
+            const resultElement = document.getElementById('predictionResult');
+            if (!resultElement) return;
+
+            const percentageElement = document.getElementById('resultPercentage');
+            const progressElement = document.getElementById('resultProgress');
+            const descriptionElement = document.getElementById('resultDescription');
+            const iconElement = document.getElementById('resultIcon');
+            const levelElement = document.getElementById('resultLevel');
+            const factorsElement = document.getElementById('keyFactors');
+            const recommendationsElement = document.getElementById('recommendations');
+
+            // ✅ CLAVE: Extraer el porcentaje REAL de Weka
+            let porcentajeReal = 0;
+            let nivelReal = "Bajo";
+            let descripcion = "Predicción calculada exitosamente.";
+
+            console.log("🔍 Respuesta completa de Weka:", result);
+
+            // Si el resultado viene directamente del modelo Weka
+            if (result.prediccion !== undefined) {
+                // Asumimos que Weka devuelve: 0=Bajo, 1=Medio, 2=Alto
+                const prediccionWeka = parseInt(result.prediccion);
+
+                switch (prediccionWeka) {
+                    case 0: // Baja adherencia
+                        porcentajeReal = 25;
+                        nivelReal = "Bajo";
+                        descripcion = "El paciente presenta factores de riesgo que pueden afectar la adherencia al plan nutricional.";
+                        break;
+                    case 1: // Media adherencia  
+                        porcentajeReal = 60;
+                        nivelReal = "Medio";
+                        descripcion = "El paciente tiene probabilidad moderada de seguir el plan. Se recomienda seguimiento regular.";
+                        break;
+                    case 2: // Alta adherencia
+                        porcentajeReal = 85;
+                        nivelReal = "Alto";
+                        descripcion = "Alta probabilidad de adherencia al plan nutricional. El paciente presenta factores favorables.";
+                        break;
+                    default:
+                        porcentajeReal = 50;
+                        nivelReal = "Medio";
+                        descripcion = "Predicción calculada con el modelo Weka.";
+                }
+
+                // Si Weka proporciona probabilidades específicas, úsalas
+                if (result.probabilidades && Array.isArray(result.probabilidades)) {
+                    // Tomar la probabilidad más alta
+                    porcentajeReal = Math.max(...result.probabilidades) * 100;
+
+                    // Determinar nivel basado en probabilidades
+                    if (porcentajeReal >= 70) {
+                        nivelReal = "Alto";
+                        descripcion = "Alta probabilidad de adherencia basada en el análisis de factores.";
+                    } else if (porcentajeReal >= 40) {
+                        nivelReal = "Medio";
+                        descripcion = "Probabilidad moderada de adherencia según el modelo predictivo.";
+                    } else {
+                        nivelReal = "Bajo";
+                        descripcion = "Baja probabilidad de adherencia identificada por el sistema.";
+                    }
+                }
+            }
+            // Si ya viene procesado con porcentaje
+            else if (result.porcentaje !== undefined) {
+                porcentajeReal = result.porcentaje;
+                nivelReal = result.nivel || "Medio";
+                descripcion = result.descripcion || "Predicción calculada exitosamente.";
+            }
+            // Si viene como distribución de probabilidad de Weka
+            else if (result.distribution) {
+                const distribucion = result.distribution;
+                if (distribucion.length >= 3) {
+                    porcentajeReal = distribucion[2] * 100;
+                    nivelReal = distribucion[2] >= 0.7 ? "Alto" :
+                        distribucion[2] >= 0.4 ? "Medio" : "Bajo";
+                    descripcion = `Distribución de probabilidades: Bajo ${(distribucion[0] * 100).toFixed(1)}%, Medio ${(distribucion[1] * 100).toFixed(1)}%, Alto ${(distribucion[2] * 100).toFixed(1)}%`;
+                }
+            }
+            // Si no reconocemos el formato, usar valores por defecto
+            else {
+                porcentajeReal = 50;
+                nivelReal = "Medio";
+                descripcion = "Predicción generada por el modelo Weka.";
+            }
+
+            // ✅ ACTUALIZAR LA BARRA DE PROGRESO CON EL VALOR REAL
+            if (percentageElement) {
+                percentageElement.textContent = `${Math.round(porcentajeReal)}%`;
+            }
+
+            if (progressElement) {
+                progressElement.style.width = `${porcentajeReal}%`;
+                progressElement.setAttribute('aria-valuenow', porcentajeReal);
+            }
+
+            // Configurar estilos según el nivel REAL
+            let levelClass, icon, progressClass;
+            if (nivelReal === "Bajo" || nivelReal === "BAJO") {
+                levelClass = "result-low";
+                icon = '<i class="bi bi-emoji-frown text-danger"></i>';
+                progressClass = "bg-danger";
+            } else if (nivelReal === "Medio" || nivelReal === "MEDIO") {
+                levelClass = "result-medium";
+                icon = '<i class="bi bi-emoji-neutral text-warning"></i>';
+                progressClass = "bg-warning";
+            } else {
+                levelClass = "result-high";
+                icon = '<i class="bi bi-emoji-smile text-success"></i>';
+                progressClass = "bg-success";
+            }
+
+            // Aplicar estilos
+            if (percentageElement) percentageElement.className = levelClass;
+            if (progressElement) progressElement.className = `progress-bar ${progressClass}`;
+            if (levelElement) {
+                levelElement.textContent = nivelReal;
+                levelElement.className = levelClass;
+            }
+            if (iconElement) iconElement.innerHTML = icon;
+            if (descriptionElement) descriptionElement.textContent = descripcion;
+
+            // Generar factores clave si están disponibles
+            if (factorsElement) {
+                if (result.factoresClave && Array.isArray(result.factoresClave)) {
+                    factorsElement.innerHTML = result.factoresClave.map(factor =>
+                        `<span class="factor-badge ${getFactorBadgeClass(factor.tipo)}">${factor.descripcion}</span>`
+                    ).join('');
+                } else {
+                    // Factores por defecto basados en la predicción
+                    factorsElement.innerHTML = generarFactoresPorPrediccion(nivelReal, result);
+                }
+            }
+
+            // Generar recomendaciones si están disponibles
+            if (recommendationsElement) {
+                recommendationsElement.innerHTML = '';
+                let recommendations = [];
+
+                if (result.recomendaciones && Array.isArray(result.recomendaciones)) {
+                    recommendations = result.recomendaciones;
+                } else {
+                    // Recomendaciones por defecto basadas en el nivel
+                    if (nivelReal === "Bajo") {
+                        recommendations = [
+                            "Seguimiento estrecho cada semana",
+                            "Plan nutricional simplificado",
+                            "Involucrar sistema de apoyo familiar",
+                            "Establecer metas a corto plazo",
+                            "Reforzar motivación inicial"
+                        ];
+                    } else if (nivelReal === "Medio") {
+                        recommendations = [
+                            "Seguimiento quincenal",
+                            "Reforzar motivación inicial",
+                            "Adaptar plan a preferencias",
+                            "Monitorear progreso regularmente",
+                            "Establecer recordatorios"
+                        ];
+                    } else {
+                        recommendations = [
+                            "Seguimiento mensual estándar",
+                            "Mantener plan actual",
+                            "Reforzar hábitos positivos",
+                            "Prevenir recaídas",
+                            "Fomentar actividad física complementaria"
+                        ];
+                    }
+                }
+
+                recommendations.forEach(rec => {
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item';
+                    li.textContent = rec;
+                    recommendationsElement.appendChild(li);
+                });
+            }
+
+            // Mostrar el resultado
+            resultElement.style.display = 'block';
+
+            // Desplazarse suavemente hacia los resultados
+            resultElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Función auxiliar para generar factores basados en la predicción
+        function generarFactoresPorPrediccion(nivel, resultadoWeka) {
+            let factores = [];
+
+            if (nivel === "Bajo") {
+                factores = [
+                    '<span class="factor-badge factor-negative">Baja motivación inicial</span>',
+                    '<span class="factor-badge factor-negative">Múltiples intentos previos fallidos</span>',
+                    '<span class="factor-badge factor-negative">Sistema de apoyo limitado</span>',
+                    '<span class="factor-badge factor-negative">Alto nivel de estrés</span>',
+                    '<span class="factor-badge factor-negative">Baja actividad física</span>'
+                ];
+            } else if (nivel === "Medio") {
+                factores = [
+                    '<span class="factor-badge factor-neutral">Motivación moderada</span>',
+                    '<span class="factor-badge factor-neutral">Algunos intentos previos</span>',
+                    '<span class="factor-badge factor-positive">Apoyo social regular</span>',
+                    '<span class="factor-badge factor-neutral">Estrés controlado</span>',
+                    '<span class="factor-badge factor-neutral">Actividad física moderada</span>'
+                ];
+            } else {
+                factores = [
+                    '<span class="factor-badge factor-positive">Alta motivación</span>',
+                    '<span class="factor-badge factor-positive">Pocos intentos previos</span>',
+                    '<span class="factor-badge factor-positive">Fuerte sistema de apoyo</span>',
+                    '<span class="factor-badge factor-positive">Bajo nivel de estrés</span>',
+                    '<span class="factor-badge factor-positive">Alta actividad física</span>'
+                ];
+            }
+
+            return factores.join('');
+        }
+
+        // Función auxiliar para obtener clase de badge de factor
+        function getFactorBadgeClass(tipo) {
+            switch (tipo) {
+                case 'positivo': return 'factor-positive';
+                case 'negativo': return 'factor-negative';
+                default: return 'factor-neutral';
+            }
+        }
+
+        // Función para limpiar el formulario de predicción
+        function clearPredictionForm() {
+            const form = document.getElementById('predictionForm');
+            if (form) {
+                form.reset();
+            }
+
+            const resultElement = document.getElementById('predictionResult');
+            if (resultElement) {
+                resultElement.style.display = 'none';
+            }
+        }
+
+        // Inicializar el botón de limpiar formulario
+        document.addEventListener('DOMContentLoaded', function () {
+            const clearButton = document.querySelector('button[type="reset"]');
+            if (clearButton) {
+                clearButton.addEventListener('click', clearPredictionForm);
+            }
+        });
+
+        // ── Chat MCP para Doctores ──
+        function usarEjemplo(texto) {
+            document.getElementById('doctorMensaje').value = texto;
+            document.getElementById('doctorMensaje').focus();
+        }
+
+        async function enviarMensajeDoctor() {
+            const input = document.getElementById('doctorMensaje');
+            const mensaje = input.value.trim();
+            if (!mensaje) return;
+
+            const chatBox = document.getElementById('doctorChatBox');
+
+            // Limpiar placeholder si es la primera vez
+            if (chatBox.querySelector('div[style*="text-align: center"]')) {
+                chatBox.innerHTML = '';
+            }
+
+            // Mostrar mensaje del doctor
+            chatBox.innerHTML += `
+        <div style="text-align: right; margin-bottom: 10px;">
+            <span style="background: #007bff; color: white; padding: 8px 14px; border-radius: 15px 15px 0 15px; display: inline-block; max-width: 80%; text-align: left;">
+                ${mensaje}
+            </span>
+            <br><small style="color: #adb5bd;">Doctor</small>
+        </div>`;
+
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Mostrar indicador de carga
+            const loadingId = 'loading-' + Date.now();
+            chatBox.innerHTML += `
+        <div id="${loadingId}" style="text-align: left; margin-bottom: 10px;">
+            <span style="background: #e9ecef; padding: 8px 14px; border-radius: 15px 15px 15px 0; display: inline-block;">
+                <i class="bi bi-three-dots" style="animation: pulse 1s infinite;"></i> Consultando base de datos...
+            </span>
+        </div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const res = await fetch('/chat/doctor', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: mensaje,
+                    credentials: 'same-origin'
+                });
+
+                if (!res.ok) {
+                    throw new Error('Error del servidor (código ' + res.status + '). Verifique que tiene permisos de Doctor.');
+                }
+
+                const data = await res.text();
+
+                // Reemplazar indicador de carga con respuesta
+                const loading = document.getElementById(loadingId);
+                if (loading) loading.remove();
+
+                // Formatear respuesta (convertir saltos de línea a <br>)
+                const respuestaFormateada = data.replace(/\n/g, '<br>');
+
+                chatBox.innerHTML += `
+            <div style="text-align: left; margin-bottom: 10px;">
+                <span style="background: #e9ecef; padding: 10px 14px; border-radius: 15px 15px 15px 0; display: inline-block; max-width: 85%; text-align: left; line-height: 1.5;">
+                    ${respuestaFormateada}
+                </span>
+                <br><small style="color: #adb5bd;"><i class="bi bi-robot"></i> Asistente MCP</small>
+            </div>`;
+
+            } catch (error) {
+                const loading = document.getElementById(loadingId);
+                if (loading) loading.remove();
+
+                chatBox.innerHTML += `
+            <div style="text-align: left; margin-bottom: 10px;">
+                <span style="background: #f8d7da; color: #721c24; padding: 8px 14px; border-radius: 15px 15px 15px 0; display: inline-block;">
+                    Error al comunicarse con el servidor: ${error.message}
+                </span>
+            </div>`;
+            }
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,21 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "RegistroUsuariosSpringSecurityApplication",
+            "request": "launch",
+            "mainClass": "com.registro.usuarios.RegistroUsuariosSpringSecurityApplication",
+            "projectName": "com.registro.usuarios"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Open doctor.html",
+            "file": "c:\\Users\\JUAN\\Downloads\\pre10Final\\com.registro.usuarios\\src\\main\\resources\\templates\\doctor.html"
+        }
+    ]
+}

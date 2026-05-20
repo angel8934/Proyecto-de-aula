@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nutri Vida - Gestión Integral de Salud</title>
+    <link rel="icon" href="https://i.ibb.co/WNVMdWcm/Whats-App-Image-2025-10-27-at-2-50-55-PM.jpg" type="image/jpeg">
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --primary: #007bff;
+            --primary-dark: #0056b3;
+            --secondary: #6c757d;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --white: #ffffff;
+            --gray-light: #e9ecef;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            padding-top: 80px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 10px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        header.scrolled {
+            padding: 5px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--white);
+            border-radius: 50%;
+            padding: 5px;
+            width: 70px;
+            height: 70px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            border: 3px solid var(--primary);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--white);
+            line-height: 1;
+            transition: all 0.3s ease;
+        }
+
+        .tagline {
+            font-size: 0.9rem;
+            font-style: italic;
+            opacity: 0.9;
+            margin-top: 3px;
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled .logo {
+            font-size: 1.6rem;
+        }
+
+        header.scrolled .tagline {
+            font-size: 0.8rem;
+        }
+
+        header.scrolled .logo-container {
+            width: 60px;
+            height: 60px;
+        }
+
+        nav {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 10px;
+            margin: 0;
+        }
+
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            white-space: nowrap;
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        nav a:hover::before {
+            left: 100%;
+        }
+
+        nav a:hover,
+        nav a.active {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        section {
+            padding: 70px 0;
+            scroll-margin-top: 80px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h1,
+        h2,
+        h3 {
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, rgba(0, 123, 255, 0.1) 0%, rgba(0, 86, 179, 0.1) 100%);
+            text-align: center;
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" opacity="0.03"><path fill="%23007bff" d="M500,200c-165,0-300,135-300,300s135,300,300,300s300-135,300-300S665,200,500,200z M500,700c-110,0-200-90-200-200 s90-200,200-200s200,90,200,200S610,700,500,700z"/></svg>');
+            background-size: 300px;
+            z-index: -1;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+            color: var(--secondary);
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        .hero .btn {
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 12px 25px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+            color: var(--white);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+
+            70% {
+                transform: scale(0.9);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .imc-section {
+            background-color: var(--white);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid var(--gray-light);
+            transition: all 0.3s ease;
+        }
+
+        .imc-section:hover {
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .imc-section h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-dark);
+        }
+
+        .form-control {
+            margin-bottom: 20px;
+            padding: 12px 15px;
+            font-size: 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--primary);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+            transform: scale(1.02);
+        }
+
+        .result-section {
+            margin-top: 20px;
+            background: linear-gradient(135deg, #f0f8ff 0%, #e6f2ff 100%);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+            animation: bounceIn 0.6s ease;
+            border-left: 4px solid var(--primary);
+        }
+
+        .result-section h4 {
+            color: var(--primary);
+        }
+
+        .metodologia-steps {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .step {
+            flex: 1;
+            min-width: 250px;
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--gray-light);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .step.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .step:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-number {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            line-height: 50px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .equipo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .miembro {
+            text-align: center;
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--gray-light);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .miembro.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .miembro:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .miembro-avatar {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-size: 2.5rem;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .miembro-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Dashboard Power BI */
+        .dashboard-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            background-color: var(--white);
+            margin-top: 30px;
+        }
+
+        .dashboard-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        footer {
+            background: linear-gradient(135deg, var(--dark) 0%, #2c3e50 100%);
+            color: var(--white);
+            padding: 40px 0 20px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--white);
+        }
+
+        .footer-section h3 {
+            color: var(--white);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-section a {
+            color: var(--gray-light);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            padding-left: 0;
+        }
+
+        .footer-section a::before {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: var(--white);
+            padding-left: 10px;
+        }
+
+        .footer-section a:hover::before {
+            width: 100%;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.9rem;
+            color: var(--gray-light);
+        }
+
+        .caracteristicas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .caracteristica-card {
+            background-color: var(--white);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid var(--gray-light);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .caracteristica-card.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .caracteristica-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .caracteristica-card h3 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .icon {
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .acceso-app {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            text-align: center;
+            padding: 70px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .acceso-app::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" opacity="0.05"><path fill="%23ffffff" d="M500,200c-165,0-300,135-300,300s135,300,300,300s300-135,300-300S665,200,500,200z M500,700c-110,0-200-90-200-200 s90-200,200-200s200,90,200,200S610,700,500,700z"/></svg>');
+            background-size: 300px;
+            z-index: 0;
+        }
+
+        .acceso-app h2 {
+            color: var(--white);
+            border-bottom: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        .acceso-app p {
+            position: relative;
+            z-index: 1;
+        }
+
+        .acceso-app .btn {
+            background-color: var(--white);
+            color: var(--primary);
+            position: relative;
+            z-index: 1;
+        }
+
+        .acceso-app .btn:hover {
+            background-color: var(--gray-light);
+        }
+
+        @media (max-width: 992px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .brand-container {
+                justify-content: center;
+                width: 100%;
+            }
+
+            nav {
+                justify-content: center;
+                width: 100%;
+            }
+
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-top: 120px;
+            }
+
+            section {
+                scroll-margin-top: 120px;
+                padding: 50px 0;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .metodologia-steps {
+                flex-direction: column;
+            }
+
+            .brand-container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .brand-text {
+                align-items: center;
+            }
+
+            nav ul {
+                gap: 8px;
+            }
+
+            nav a {
+                padding: 5px 10px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header id="main-header">
+        <div class="container header-content">
+            <div class="brand-container">
+                <div class="logo-container">
+                    <img src="https://i.ibb.co/WNVMdWcm/Whats-App-Image-2025-10-27-at-2-50-55-PM.jpg" alt="Logo"
+                        class="logo-img">
+                </div>
+                <div class="brand-text">
+                    <div class="logo">NUTRI VIDA</div>
+                    <div class="tagline">Pequeños cambios, Grandes resultados</div>
+                </div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#inicio" class="nav-link active">Inicio</a></li>
+                    <li><a href="#problema" class="nav-link">El Problema</a></li>
+                    <li><a href="#caracteristicas" class="nav-link">Características</a></li>
+                    <li><a href="#imc" class="nav-link">Calcula tu IMC</a></li>
+                    <li><a href="#metodologia" class="nav-link">Metodología</a></li>
+                    <li><a href="#dashboard" class="nav-link">📊 Dashboard</a></li>
+                    <li><a href="#equipo" class="nav-link">Equipo</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section id="inicio" class="hero">
+        <div class="container">
+            <h1>Gestión Integral de Salud</h1>
+            <p>Aplicativo innovador para pacientes con problemas de peso y para brindar consejos nutricionales en
+                Cartagena</p>
+            <a href="#caracteristicas" class="btn">Conoce más</a>
+        </div>
+    </section>
+
+    <section id="problema">
+        <div class="container">
+            <h2>El Problema de la Obesidad</h2>
+            <p>La obesidad, definida como el exceso de acumulación de grasa en el cuerpo, se ha convertido en una
+                epidemia de salud global. Esta condición no solo afecta la apariencia física, sino que también está
+                fuertemente asociada con una serie de enfermedades crónicas graves, como la diabetes tipo 2, la
+                hipertensión, enfermedades cardiovasculares, ciertos tipos de cáncer y problemas de salud mental.</p>
+            <p>Este problema es multifacético y está influido por una serie de factores, que incluyen la disponibilidad
+                de alimentos poco saludables, la falta de actividad física, la falta de educación sobre nutrición y
+                hábitos de vida saludables, así como barreras socioeconómicas que dificultan el acceso a una atención
+                médica y recursos adecuados.</p>
+            <p>La limitada disponibilidad de información y recursos efectivos para la prevención y tratamiento de la
+                obesidad es un desafío importante que requiere una solución integral e innovadora.</p>
+        </div>
+    </section>
+
+    <section id="caracteristicas" style="background-color: #f0f4f7;">
+        <div class="container">
+            <h2>Características de la Aplicación</h2>
+            <div class="caracteristicas-grid">
+                <div class="caracteristica-card">
+                    <h3><span class="icon">📊</span> Cálculo de IMC</h3>
+                    <p>Calcula tu Índice de Masa Corporal de forma precisa con nuestro sistema avanzado que considera
+                        múltiples factores.</p>
+                </div>
+                <div class="caracteristica-card">
+                    <h3><span class="icon">📅</span> Gestión de Citas</h3>
+                    <p>Agenda y gestiona tus citas con profesionales de la salud de manera fácil y rápida.</p>
+                </div>
+                <div class="caracteristica-card">
+                    <h3><span class="icon">💡</span> Recomendaciones Personalizadas</h3>
+                    <p>Recibe consejos nutricionales y de estilo de vida adaptados a tus necesidades específicas.</p>
+                </div>
+                <div class="caracteristica-card">
+                    <h3><span class="icon">📈</span> Seguimiento de Progreso</h3>
+                    <p>Monitorea tu evolución con herramientas de seguimiento y registro de tu historial de salud.</p>
+                </div>
+                <div class="caracteristica-card">
+                    <h3><span class="icon">🍎</span> Información Nutricional</h3>
+                    <p>Accede a una base de datos completa de valores nutricionales de diferentes alimentos.</p>
+                </div>
+                <div class="caracteristica-card">
+                    <h3><span class="icon">👥</span> Conexión con Profesionales</h3>
+                    <p>Conéctate con nutricionistas y médicos especializados en el manejo del peso y la nutrición.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="imc">
+        <div class="container">
+            <div class="imc-section">
+                <h2>Calcula tu Índice de Masa Corporal (IMC)</h2>
+                <form id="normalImcForm" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="pesoNormal" class="form-label">Peso (kg):</label>
+                        <input type="number" class="form-control" id="pesoNormal" name="pesoNormal" required>
+                        <div class="invalid-feedback">Por favor, ingresa un peso válido.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="alturaNormal" class="form-label">Altura (cm):</label>
+                        <input type="number" class="form-control" id="alturaNormal" name="alturaNormal" required>
+                        <div class="invalid-feedback">Por favor, ingresa una altura válida.</div>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Calcular IMC</button>
+                </form>
+
+                <div class="result-section" id="imcResult">
+                    <h4>Tu IMC es: <span id="imcValue"></span></h4>
+                    <p>Según tu IMC, estás en la categoría de <span id="imcCategory"></span></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="metodologia">
+        <div class="container">
+            <h2>Nuestra Metodología</h2>
+            <p>La metodología del proyecto sigue un paradigma positivista con un enfoque cuantitativo, complementado por
+                un estudio de casos cualitativo y un diseño descriptivo. Se implementará un estudio basado en la
+                recolección y análisis de datos obtenidos a través de encuestas, seguimiento del uso del aplicativo y
+                medición de indicadores clave como hábitos alimenticios y evolución del peso de los usuarios.</p>
+
+            <div class="metodologia-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Identificación del Impacto</h3>
+                    <p>Mediante encuestas antes y después del uso del aplicativo, evaluamos el impacto en los hábitos
+                        alimenticios de los usuarios.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Evaluación de Efectividad</h3>
+                    <p>Medición periódica de cambios físicos y uso de recordatorios para fomentar la participación en la
+                        gestión del peso.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Promoción de Educación</h3>
+                    <p>Proporcionamos contenido educativo y medimos el conocimiento adquirido sobre nutrición y hábitos
+                        saludables.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN DASHBOARD POWER BI - UBICADA DESPUÉS DE METODOLOGÍA -->
+    <section id="dashboard" style="background-color: #ffffff;">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 20px;">📊 Dashboard de Análisis - Nutri Vida</h2>
+            <p style="text-align: center; margin-bottom: 40px; color: var(--secondary);">
+                Visualiza métricas clave sobre los usuarios, estadísticas y tendencias de salud en
+                nuestra comunidad.
+            </p>
+            <div class="dashboard-container">
+                <iframe title="NutriVida Dashboard"
+                    src="https://app.powerbi.com/view?r=eyJrIjoiMzM3NzhiNTUtZTE3MS00ZWMxLTg2MTEtNTIyYTk1ZTgxYjFmIiwidCI6IjlkMTJiZjNmLWU0ZjYtNDdhYi05MTJmLTFhMmYwZmM0OGFhNCIsImMiOjR9"
+                    allowFullScreen="true">
+                </iframe>
+            </div>
+            <p class="text-muted text-center mt-3" style="font-size: 0.85rem; color: #6c757d;">
+                <i class="bi bi-info-circle"></i> Los datos se actualizan automáticamente desde nuestra base de datos.
+            </p>
+        </div>
+    </section>
+
+    <section id="equipo">
+        <div class="container">
+            <h2>Nuestro Equipo</h2>
+            <div class="equipo-grid">
+                <div class="miembro">
+                    <div class="miembro-avatar">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Héctor José Galindo Martínez">
+                    </div>
+                    <h3>Héctor José Galindo Martínez</h3>
+                    <p>Código: 0000056657</p>
+                </div>
+
+                <div class="miembro">
+                    <div class="miembro-avatar">
+                        <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Ángel Gabriel Alvarez Mattos">
+                    </div>
+                    <h3>Ángel Gabriel Alvarez Mattos</h3>
+                    <p>Código: 0000056657</p>
+                </div>
+
+                <div class="miembro">
+                    <div class="miembro-avatar">
+                        <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="Juan Pablo Manrique Rico">
+                    </div>
+                    <h3>Juan Pablo Manrique Rico</h3>
+                    <p>Código: 0000057939</p>
+                </div>
+
+                <div class="miembro">
+                    <div class="miembro-avatar">
+                        <img src="https://randomuser.me/api/portraits/men/89.jpg" alt="José Daniel López Ricardo">
+                    </div>
+                    <h3>José Daniel López Ricardo</h3>
+                    <p>Código: 0000057598</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="acceso-app">
+        <div class="container">
+            <h2>Accede a Nuestra Aplicación Completa</h2>
+            <p>Utiliza nuestra aplicación completa para calcular tu IMC de forma avanzada, agendar citas con
+                profesionales de la salud y obtener recomendaciones personalizadas.</p>
+            <a href="usuario (2).html" class="btn">Ir a la Aplicación Completa</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">NUTRI VIDA</div>
+                    <p>Pequeños cambios, Grandes resultados</p>
+                    <p>Aplicativo innovador para la gestión integral de salud en Cartagena.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Enlaces Rápidos</h3>
+                    <ul>
+                        <li><a href="#inicio">Inicio</a></li>
+                        <li><a href="#problema">El Problema</a></li>
+                        <li><a href="#caracteristicas">Características</a></li>
+                        <li><a href="#imc">Calcula tu IMC</a></li>
+                        <li><a href="#metodologia">Metodología</a></li>
+                        <li><a href="#dashboard">Dashboard</a></li>
+                        <li><a href="#equipo">Equipo</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contacto</h3>
+                    <p>Proyecto desarrollado en Cartagena, Colombia</p>
+                    <p>Email: info@nutrivida.com</p>
+                    <p>Teléfono: +57 XXX XXX XXXX</p>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Nutri Vida - Todos los derechos reservados</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function calculateIMC(peso, altura) {
+            return (peso / (altura * altura)).toFixed(2);
+        }
+
+        function showIMCResult(imc, categoria) {
+            document.getElementById('imcValue').innerText = imc;
+            document.getElementById('imcCategory').innerText = categoria;
+            document.getElementById('imcResult').style.display = 'block';
+            document.getElementById('imcResult').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        document.getElementById('normalImcForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            let peso = parseFloat(document.getElementById('pesoNormal').value);
+            let altura = parseFloat(document.getElementById('alturaNormal').value) / 100;
+
+            if (isNaN(peso) || peso <= 0 || isNaN(altura) || altura <= 0) {
+                alert('Por favor, ingresa valores válidos para todos los campos.');
+                return;
+            }
+
+            let imc = calculateIMC(peso, altura);
+            let categoria = '';
+
+            if (imc < 18.5) {
+                categoria = 'bajo peso';
+            } else if (imc >= 18.5 && imc <= 24.9) {
+                categoria = 'peso normal';
+            } else if (imc >= 25 && imc <= 29.9) {
+                categoria = 'sobrepeso';
+            } else {
+                categoria = 'obesidad';
+            }
+
+            showIMCResult(imc, categoria);
+        });
+
+        window.addEventListener('scroll', function () {
+            const header = document.getElementById('main-header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('nav a');
+            const sections = document.querySelectorAll('section');
+
+            function setActiveLink() {
+                const scrollPos = window.pageYOffset;
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 100;
+                    const sectionHeight = section.clientHeight;
+                    const sectionId = section.getAttribute('id');
+
+                    if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === '#' + sectionId) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            window.addEventListener('scroll', setActiveLink);
+            setActiveLink();
+
+            const sectionObserver = new IntersectionObserver(function (entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            sections.forEach(section => {
+                sectionObserver.observe(section);
+            });
+
+            const cardObserver = new IntersectionObserver(function (entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-in');
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+            document.querySelectorAll('.caracteristica-card, .step, .miembro').forEach(el => {
+                cardObserver.observe(el);
+            });
+
+            setTimeout(function () {
+                sections.forEach(section => {
+                    if (section.getBoundingClientRect().top < window.innerHeight * 0.8) {
+                        section.classList.add('visible');
+                    }
+                });
+                document.querySelectorAll('.caracteristica-card, .step, .miembro').forEach(el => {
+                    if (el.getBoundingClientRect().top < window.innerHeight * 0.8) {
+                        el.classList.add('animate-in');
+                    }
+                });
+            }, 100);
+        });
+    </script>
+</body>
+
+</html>

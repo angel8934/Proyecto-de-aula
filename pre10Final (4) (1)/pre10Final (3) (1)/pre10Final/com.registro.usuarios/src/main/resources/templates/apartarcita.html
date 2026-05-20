@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apartar Cita</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --primary-light: #e3f2fd;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --text-dark: #333;
+            --text-light: #6c757d;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e3f2fd 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .form-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            width: 95%;
+            max-width: 700px;
+            margin: 20px;
+        }
+        
+        .form-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: clamp(20px, 4vw, 25px) clamp(15px, 3vw, 30px);
+            text-align: center;
+        }
+        
+        .form-header h1 {
+            margin: 0;
+            font-weight: 600;
+            font-size: clamp(1.5rem, 4vw, 1.8rem);
+            line-height: 1.3;
+        }
+        
+        .form-header p {
+            margin: 8px 0 0;
+            opacity: 0.9;
+            font-weight: 300;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+        
+        .form-body {
+            padding: clamp(20px, 4vw, 30px);
+        }
+        
+        .form-group {
+            margin-bottom: clamp(20px, 4vw, 25px);
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: clamp(0.9rem, 2.5vw, 0.95rem);
+        }
+        
+        .required::after {
+            content: " *";
+            color: var(--danger-color);
+        }
+        
+        .form-control, .form-select {
+            width: 100%;
+            padding: clamp(10px, 2.5vw, 12px) clamp(12px, 2.5vw, 15px);
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            transition: var(--transition);
+            background-color: #fff;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            outline: none;
+        }
+        
+        .form-control::placeholder {
+            color: #adb5bd;
+        }
+        
+        .form-control:read-only {
+            background-color: #f8f9fa;
+            color: var(--text-light);
+            cursor: not-allowed;
+        }
+        
+        .error-message {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+            padding: clamp(10px, 2.5vw, 12px) clamp(12px, 2.5vw, 15px);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            border-left: 4px solid var(--danger-color);
+            font-size: clamp(0.85rem, 2.5vw, 0.9rem);
+        }
+        
+        .success-message {
+            background-color: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+            padding: clamp(10px, 2.5vw, 12px) clamp(12px, 2.5vw, 15px);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            border-left: 4px solid var(--success-color);
+            font-size: clamp(0.85rem, 2.5vw, 0.9rem);
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            padding: clamp(12px, 3vw, 14px);
+            font-size: clamp(1rem, 3vw, 1.1rem);
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+            margin-top: 10px;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+        }
+        
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+        
+        .form-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .form-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+            font-size: clamp(0.85rem, 2.5vw, 0.9rem);
+            flex: 1;
+            min-width: 140px;
+            justify-content: center;
+        }
+        
+        .form-footer a:hover {
+            color: var(--primary-dark);
+            text-decoration: none;
+        }
+        
+        .form-footer a i {
+            margin-right: 8px;
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+        }
+        
+        .info-text {
+            color: var(--text-light);
+            font-size: clamp(0.8rem, 2.5vw, 0.85rem);
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-text i {
+            margin-right: 5px;
+            color: var(--primary-color);
+            font-size: clamp(0.8rem, 2.5vw, 0.85rem);
+        }
+
+        .user-badge {
+            display: inline-flex;
+            align-items: center;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        .user-badge i {
+            margin-right: 6px;
+        }
+        
+        /* Ajustes específicos para pantallas muy pequeñas */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+                min-height: 100vh;
+                height: auto;
+            }
+            
+            .form-container {
+                margin: 10px 0;
+                width: 100%;
+            }
+            
+            .form-body {
+                padding: 20px 15px;
+            }
+            
+            .form-footer {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .form-footer a {
+                min-width: 100%;
+                padding: 10px;
+                background: #f8f9fa;
+                border-radius: 6px;
+                text-align: center;
+            }
+        }
+        
+        /* Ajustes para tablets */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .form-container {
+                width: 90%;
+                max-width: 600px;
+            }
+        }
+        
+        /* Ajustes para pantallas grandes */
+        @media (min-width: 1200px) {
+            .form-container {
+                width: 85%;
+                max-width: 700px;
+            }
+        }
+        
+        /* Asegurar que el formulario siempre sea visible */
+        @media (max-height: 700px) {
+            body {
+                align-items: flex-start;
+                padding: 20px 0;
+            }
+        }
+        
+        /* Scroll suave para formularios largos en móviles */
+        .form-body {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        /* Ocultar scrollbar pero mantener funcionalidad */
+        .form-body::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+        .form-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .form-body::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-header">
+            <h1>Apartar una Cita</h1>
+            <p>Complete el formulario para programar su cita médica</p>
+            <div class="user-badge" th:if="${usuarioEmail}">
+                <i class="bi bi-person-circle"></i>
+                <span th:text="${usuarioEmail}">usuario@email.com</span>
+            </div>
+        </div>
+        
+        <form th:action="@{/citas/guardar}" th:object="${citaDTO}" method="post" class="form-body">
+            <!-- Sección de mensaje de error -->
+            <div th:if="${error}" class="error-message">
+                <i class="bi bi-exclamation-circle"></i> <span th:text="${error}"></span>
+            </div>
+
+            <!-- Sección de mensaje de éxito -->
+            <div th:if="${exito}" class="success-message">
+                <i class="bi bi-check-circle"></i> <span th:text="${exito}"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="fechaHora" class="form-label required">Fecha y Hora</label>
+                <input type="datetime-local" id="fechaHora" th:field="*{fechaHora}" class="form-control" required />
+                <div class="info-text">
+                    <i class="bi bi-info-circle"></i> Horario disponible: 6:00 AM - 10:00 PM
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="lugar" class="form-label required">Lugar de Consulta</label>
+                <select id="lugar" th:field="*{lugar}" class="form-select" required>
+                    <option value="" disabled selected>Seleccione un lugar</option>
+                    <option value="Cartagena de indias cra71a #31 - 26. 2 piso y por favor confirmar en recepcion">
+                        Cartagena de indias cra71a #31 - 26. 2 piso
+                    </option>
+                    <option value="Cartagena de indias cra71 #39 31 4 piso y por favor confirmar en recepcion">
+                        Cartagena de indias cra71 #39 31 4 piso
+                    </option>
+                    <option value="Sede: Turcabo CL 17 #12 cra 2a #12 70 piso 1 y por favor confirmar en recepcion">
+                        Sede: Turcabo CL 17 #12 cra 2a #12 70 piso 1
+                    </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="medicoId" class="form-label required">Médico</label>
+                <select id="medicoId" th:field="*{medico}" class="form-select" required>
+                    <option value="" disabled selected>Seleccione un médico</option>
+                    <th:block th:each="doctor : ${doctores}">
+                        <option th:value="${doctor.id}" th:text="${doctor.nombre} + ' ' + ${doctor.apellido}"></option>
+                    </th:block>
+                </select>
+            </div>
+
+            <!-- Email oculto, se envía automáticamente -->
+            <input type="hidden" th:field="*{email}" />
+
+            <div class="form-group">
+                <label class="form-label">Email de Contacto</label>
+                <input type="email" class="form-control" th:value="${usuarioEmail}" readonly />
+                <div class="info-text">
+                    <i class="bi bi-lock"></i> Se usa el email de tu cuenta automáticamente
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="bi bi-calendar-check"></i> Confirmar Cita
+            </button>
+
+            <div class="form-footer">
+                <a href="/citas/mis">
+                    <i class="bi bi-list-ul"></i> Ver Mis Citas
+                </a>
+                <a href="/index">
+                    <i class="bi bi-arrow-left"></i> Volver al Inicio
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Elimina el texto placeholder una vez el usuario selecciona otra opción
+        document.querySelectorAll('select').forEach(select => {
+            select.addEventListener('change', function () {
+                const placeholderOption = this.querySelector('option[disabled][selected]');
+                if (placeholderOption && this.value !== '') {
+                    placeholderOption.remove();
+                }
+            });
+        });
+        
+        // Validación de horario
+        document.querySelector("form").addEventListener("submit", function (e) {
+            const fechaHoraInput = document.getElementById("fechaHora").value;
+            if (fechaHoraInput) {
+                const fecha = new Date(fechaHoraInput);
+                const hora = fecha.getHours();
+
+                if (hora < 6 || hora >= 22) {
+                    alert("Solo se permiten citas entre las 6:00 AM y las 10:00 PM.");
+                    e.preventDefault();
+                }
+
+                // Validar que no sea fecha pasada
+                if (fecha < new Date()) {
+                    alert("No se pueden agendar citas en el pasado.");
+                    e.preventDefault();
+                }
+            }
+        });
+
+        // Establecer fecha mínima como ahora
+        const fechaInput = document.getElementById('fechaHora');
+        if (fechaInput && !fechaInput.value) {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            fechaInput.min = now.toISOString().slice(0, 16);
+        }
+        
+        // Ajustar altura del body para ocupar toda la pantalla
+        function adjustBodyHeight() {
+            if (window.innerHeight < 600) {
+                document.body.style.alignItems = 'flex-start';
+                document.body.style.padding = '10px 0';
+            } else {
+                document.body.style.alignItems = 'center';
+                document.body.style.padding = '20px';
+            }
+        }
+        
+        window.addEventListener('load', adjustBodyHeight);
+        window.addEventListener('resize', adjustBodyHeight);
+    </script>
+</body>
+</html>

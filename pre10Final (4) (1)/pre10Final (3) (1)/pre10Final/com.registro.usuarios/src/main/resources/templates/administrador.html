@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Personal</title>
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <title>Administradores</title>
+  <style>
+    /* Container black border box */
+    .admin-container {
+      border: 2px solid black;
+      padding: 10px;
+      max-width: 600px;
+      margin: 0 auto;
+      font-family: Arial, sans-serif;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+     thead th {
+      background-color: #333333;
+      color: white;
+      padding: 8px;
+      text-align: left;
+    }
+    tbody tr:nth-child(odd) {
+      background-color: white;
+      color: black;
+    }
+    tbody tr:nth-child(even) {
+      background-color: black;
+      color: white;
+    }
+    tbody td {
+      padding: 8px;
+      border: 1px solid #ddd;
+    }
+  
+  
+    body {
+        font-family: 'Poppins', sans-serif;
+        height: 100vh;
+        margin: 0;
+        display: flex;
+        overflow: hidden;
+    }
+
+    .sidebar {
+        width: 250px;
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        padding: 20px;
+        height: 100%;
+        position: fixed;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        border-right: 2px solid rgba(255, 255, 255, 0.2);
+        overflow-y: auto;
+    }
+
+    .sidebar header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .sidebar header img {
+        display: block;
+        margin: 0 auto 15px;
+        max-width: 100px;
+        border-radius: 50%;
+    }
+
+    .sidebar nav {
+        flex-grow: 1;
+    }
+
+    .sidebar a {
+        color: white;
+        text-decoration: none;
+        display: block;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .sidebar a:hover {
+        background: #00448f;
+        transform: scale(1.05);
+    }
+
+    .sidebar .logout a {
+        background-color: #dc3545;
+    }
+
+    .nav-link.active {
+        background-color: #0056b3;
+        font-weight: bold;
+        border-left: 4px solid #ffffff;
+    }
+
+    .content {
+        margin-left: 250px;
+        padding: 20px;
+        background-color: #f8f9fa;
+        flex: 1;
+        overflow-y: auto;
+        height: calc(100vh - 40px);
+    }
+
+    h2 {
+        margin-bottom: 30px;
+        font-weight: 500;
+    }
+
+    button {
+        background-color: #007bff;
+        border-color: #0056b3;
+        border-radius: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.3s ease, transform 0.2s;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+        transform: scale(1.05);
+    }
+
+    .form-control {
+        margin-bottom: 20px;
+        padding: 10px;
+        font-size: 1rem;
+        border-radius: 10px;
+        border: 1px solid #007bff;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+    }
+
+    .admin-list {
+        margin-top: 20px;
+    }
+
+    .admin-card {
+        border: 1px solid #007bff;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .table th,
+    .table td {
+        vertical-align: middle;
+    }
+
+    .table {
+        margin-top: 20px;
+    }
+
+    .accordion-button {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .accordion-button:not(.collapsed) {
+        background-color: #0056b3;
+        color: white;
+    }
+
+    .accordion-body {
+        background-color: #0056b3;
+        color: white;
+    }
+
+    .accordion-body a {
+        color: white;
+        text-decoration: none;
+    }
+
+    .accordion-body a {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        margin: 5px 0;
+        background-color: #0056b3;
+        border-radius: 5px;
+        transition: background 0.3s, transform 0.2s;
+        color: white;
+        text-decoration: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .accordion-body a:hover {
+        background-color: #003d80;
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .accordion-body a i {
+        margin-right: 10px;
+        font-size: 1.2rem;
+        transition: transform 0.2s;
+    }
+
+    .accordion-body a:hover i {
+        transform: rotate(10deg);
+    }
+
+    @media (max-width: 768px) {
+        .sidebar {
+            width: 100%;
+            height: auto;
+            position: relative;
+            display: none;
+        }
+
+        .content {
+            margin-left: 0;
+        }
+
+        .sidebar.show {
+            display: block;
+        }
+
+        .menu-toggle {
+            display: block;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    }
+
+    .menu-toggle {
+        display: none;
+    }
+
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #007bff;
+        border-radius: 20px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #0056b3;
+    }
+    @media (max-width: 768px) {
+     .menu-toggle {
+        display: block;
+    }
+}
+  </style>
+</head>
+
+<body>
+<button class="menu-toggle d-block d-md-none" onclick="toggleMenu()">☰</button>
+<div class="sidebar">
+  <header>
+    <img src="https://img.freepik.com/vector-premium/1-mayo-dia-trabajo-homenaje-trabajadores-construccion-antecedentes-ciudad-detras-ilustracion-vectorial_432516-1395.jpg?w=360" alt="Logo">
+    <h4><b>Gestión Personal - Administrador</b></h4>
+  </header>
+  <nav class="nav flex-column">
+    <div class="accordion" id="gestionPersonal">
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAdministradores" aria-expanded="false" aria-controls="collapseAdministradores">
+            Gestión Administradores
+          </button>
+        </h2>
+        <div id="collapseAdministradores" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#gestionPersonal">
+          <div class="accordion-body">
+            <a class="nav-link" data-bs-toggle="tab" href="#agregarAdmin" aria-controls="agregarAdmin" aria-selected="false">
+              <i class="bi bi-person-plus"></i> Agregar Administrador
+            </a>
+            <a class="nav-link" data-bs-toggle="tab" href="#modificarAdmin" aria-controls="modificarAdmin" aria-selected="false">
+              <i class="bi bi-pencil-square"></i> Modificar Administrador
+            </a>
+            <a class="nav-link" data-bs-toggle="tab" href="#eliminarAdmin" aria-controls="eliminarAdmin" aria-selected="false">
+              <i class="bi bi-trash"></i> Eliminar Administrador
+            </a>
+            <a class="nav-link" data-bs-toggle="tab" href="#listaAdmin" aria-controls="listaAdmin" aria-selected="false">
+              <i class="bi bi-list"></i> Lista de Administradores
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingTwo">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDoctores" aria-expanded="false" aria-controls="collapseDoctores">
+            Gestión Doctores
+          </button>
+        </h2>
+        <div id="collapseDoctores" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#gestionPersonal">
+          <div class="accordion-body">
+            <a class="nav-link" data-bs-toggle="tab" href="#agregarDoctor" aria-controls="agregarDoctor" aria-selected="false">
+              <i class="bi bi-person-plus"></i> Agregar Doctor
+            </a>
+            <a class="nav-link" data-bs-toggle="tab" href="#modificarDoctor" aria-controls="modificarDoctor" aria-selected="false">
+              <i class="bi bi-pencil-square"></i> Modificar Doctor
+            </a>
+            <a class="nav-link" data-bs-toggle="tab" href="#eliminarDoctor" aria-controls="eliminarDoctor" aria-selected="false">
+              <i class="bi bi-trash"></i> Eliminar Doctor
+            </a>
+            <a class="nav-link" data-bs-toggle="tab" href="#listaDoctor" aria-controls="listaDoctor" aria-selected="false">
+              <i class="bi bi-list"></i> Lista de Doctores
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingThree">
+          <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUsuarios" aria-expanded="false" aria-controls="collapseUsuarios">
+            Gestión Usuarios
+          </button>
+        </h2>
+        <div id="collapseUsuarios" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#gestionPersonal">
+          <div class="accordion-body">
+            <a class="nav-link" data-bs-toggle="tab" href="#agregarUsuario" aria-controls="agregarUsuario" aria-selected="false">
+              <i class="bi bi-person-plus"></i> Visualizar Usuario
+            </a>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="logout">
+         <ul class="nav navbar-nav">
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/logout}">Cerrar Sesión</a></li>
+                </ul>
+    </div>
+</div>
+
+<div class="content">
+  <div class="tab-content">
+    <div class="tab-pane fade" id="agregarAdmin" role="tabpanel" aria-labelledby="agregarAdmin-tab">
+      <h2>Agregar Administrador</h2>
+      <form>
+        <input type="text" class="form-control" placeholder="Nombre" required>
+        <input type="email" class="form-control" placeholder="Correo" required>
+        <input type="password" class="form-control" placeholder="Contraseña" required>
+        <input type="password" class="form-control" placeholder="Confirmar Contraseña" required>
+        <button type="submit" class="btn btn-primary">Agregar Administrador</button>
+      </form>
+    </div>
+    <div class="tab-pane fade" id="modificarAdmin" role="tabpanel" aria-labelledby="modificarAdmin-tab">
+      <h2>Modificar Administrador</h2>
+      <form>
+        <input type="text" class="form-control" placeholder="Nombre" required>
+        <input type="email" class="form-control" placeholder="Correo" required>
+        <input type="password" class="form-control" placeholder="Nueva Contraseña">
+        <input type="password" class="form-control" placeholder="Confirmar Nueva Contraseña">
+        <button type="submit" class="btn btn-primary">Modificar Administrador</button>
+      </form>
+    </div>
+    <div class="tab-pane fade" id="eliminarAdmin" role="tabpanel" aria-labelledby="eliminarAdmin-tab">
+      <h2>Eliminar Administrador</h2>
+      <form>
+        <input type="text" class="form-control" placeholder="Nombre del Administrador" required>
+        <button type="submit" class="btn btn-danger">Eliminar Administrador</button>
+      </form>
+    </div>
+    <div class="tab-pane fade" id="listaAdmin" role="tabpanel" aria-labelledby="listaAdmin-tab">
+      <h2>Lista de Administradores</h2>
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Correo</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Aquí se agregarían las filas de la tabla con los datos de los administradores -->
+        </tbody>
+      </table>
+    </div>
+    <div class="tab-pane fade" id="agregarDoctor" role="tabpanel" aria-labelledby="agregarDoctor-tab">
+      <h2>Agregar Doctor</h2>
+      <form>
+        <input type="text" class="form-control" placeholder="Nombre" required>
+        <input type="email" class="form-control" placeholder="Correo" required>
+        <input type="password" class="form-control" placeholder="Contraseña" required>
+        <input type="password" class="form-control" placeholder="Confirmar Contraseña" required>
+        <button type="submit" class="btn btn-primary">Agregar Doctor</button>
+      </form>
+    </div>
+    <div class="tab-pane fade" id="modificarDoctor" role="tabpanel" aria-labelledby="modificarDoctor-tab">
+      <h2>Modificar Doctor</h2>
+      <form>
+        <input type="text" class="form-control" placeholder="Nombre" required>
+        <input type="email" class="form-control" placeholder="Correo" required>
+        <input type="password" class="form-control" placeholder="Nueva Contraseña">
+        <input type="password" class="form-control" placeholder="Confirmar Nueva Contraseña">
+        <button type="submit" class="btn btn-primary">Modificar Doctor</button>
+      </form>
+    </div>
+    <div class="tab-pane fade" id="eliminarDoctor" role="tabpanel" aria-labelledby="eliminarDoctor-tab">
+      <h2>Eliminar Doctor</h2>
+      <form>
+        <input type="text" class="form-control" placeholder="Nombre del Doctor" required>
+        <button type="submit" class="btn btn-danger">Eliminar Doctor</button>
+      </form>
+    </div>
+    <div class="tab-pane fade" id="listaDoctor" role="tabpanel" aria-labelledby="listaDoctor-tab">
+      <h2>Lista de Doctores</h2>
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Correo</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Aquí se agregarían las filas de la tabla con los datos de los doctores -->
+        </tbody>
+      </table>
+    </div>
+    <div class="tab-pane fade" id="agregarUsuario" role="tabpanel" aria-labelledby="agregarUsuario-tab">
+      <h1>Panel de Administrador</h1>
+
+    <h2>Doctores</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            <th:block th:each="doctor : ${doctores}">
+                <tr>
+                    <td th:text="${doctor.id}"></td>
+                    <td th:text="${doctor.nombre}"></td>
+                    <td th:text="${doctor.apellido}"></td>
+                    <td th:text="${doctor.email}"></td>
+                </tr>
+            </th:block>
+        </tbody>
+    </table>
+
+    <h2>Administradores</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            <th:block th:each="admin : ${administradores}">
+                <tr>
+                    <td th:text="${admin.id}"></td>
+                    <td th:text="${admin.nombre}"></td>
+                    <td th:text="${admin.apellido}"></td>
+                    <td th:text="${admin.email}"></td>
+                </tr>
+            </th:block>
+        </tbody>
+    </table>
+
+    <h2>Pacientes <span id="totalPacientes" class="text-muted" style="font-size: 0.8em;" th:text="'(' + ${totalPacientes} + ' total)'"></span></h2>
+    
+    <!-- Buscador de pacientes -->
+    <div class="mb-3" style="max-width: 400px;">
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input type="text" id="adminSearchPacientes" class="form-control" placeholder="Buscar pacientes...">
+      </div>
+    </div>
+    <div id="adminPaginationInfo" class="text-muted mb-2" style="font-size: 0.85rem;"></div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody id="adminPacientesBody">
+            <tr><td colspan="4" style="text-align:center;">Cargando...</td></tr>
+        </tbody>
+    </table>
+    
+    <!-- Paginación -->
+    <nav><ul class="pagination justify-content-center mt-3" id="adminPaginationList"></ul></nav>
+    </div>
+   
+    
+    
+  </div>
+</div>
+|
+<script>
+  function toggleMenu() {
+      var sidebar = document.querySelector('.sidebar');
+      sidebar.classList.toggle('show');
+  }
+  
+  // ===== PAGINACIÓN AJAX PARA PACIENTES =====
+  let adminPage = 0;
+  let adminSearch = '';
+  let adminSearchTimer = null;
+  const adminCache = {};
+  
+  document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.getElementById('adminSearchPacientes');
+      if (searchInput) {
+          searchInput.addEventListener('input', function() {
+              clearTimeout(adminSearchTimer);
+              adminSearchTimer = setTimeout(() => {
+                  adminSearch = this.value.trim();
+                  adminPage = 0;
+                  loadAdminPacientes();
+              }, 300);
+          });
+      }
+      loadAdminPacientes();
+  });
+  
+  async function loadAdminPacientes() {
+      const tbody = document.getElementById('adminPacientesBody');
+      if (!tbody) return;
+      
+      const cacheKey = `${adminPage}_${adminSearch}`;
+      if (adminCache[cacheKey]) { renderAdminPacientes(adminCache[cacheKey]); return; }
+      
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Cargando...</td></tr>';
+      
+      try {
+          const res = await fetch(`/api/usuarios/rol/1?page=${adminPage}&size=20&search=${encodeURIComponent(adminSearch)}`);
+          const data = await res.json();
+          adminCache[cacheKey] = data;
+          renderAdminPacientes(data);
+      } catch(e) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;">Error al cargar</td></tr>';
+      }
+  }
+  
+  function renderAdminPacientes(data) {
+      const tbody = document.getElementById('adminPacientesBody');
+      const info = document.getElementById('adminPaginationInfo');
+      
+      if (data.content && data.content.length > 0) {
+          tbody.innerHTML = data.content.map(u => `<tr><td>${u.id}</td><td>${u.nombre||''}</td><td>${u.apellido||''}</td><td>${u.email||''}</td></tr>`).join('');
+      } else {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Sin resultados</td></tr>';
+      }
+      
+      if (info) {
+          const s = data.number * data.size + 1;
+          const e = Math.min(s + data.numberOfElements - 1, data.totalElements);
+          info.textContent = data.totalElements > 0 ? `Mostrando ${s}-${e} de ${data.totalElements}` : '';
+      }
+      
+      // Paginación
+      const pl = document.getElementById('adminPaginationList');
+      if (!pl || data.totalPages <= 1) { if(pl) pl.innerHTML=''; return; }
+      let h = `<li class="page-item ${data.first?'disabled':''}"><a class="page-link" href="#" onclick="adminGoTo(${data.number-1});return false;">&laquo;</a></li>`;
+      for(let i=Math.max(0,data.number-2);i<=Math.min(data.totalPages-1,data.number+2);i++){
+          h += `<li class="page-item ${i===data.number?'active':''}"><a class="page-link" href="#" onclick="adminGoTo(${i});return false;">${i+1}</a></li>`;
+      }
+      h += `<li class="page-item ${data.last?'disabled':''}"><a class="page-link" href="#" onclick="adminGoTo(${data.number+1});return false;">&raquo;</a></li>`;
+      pl.innerHTML = h;
+  }
+  
+  function adminGoTo(p) { adminPage = p; loadAdminPacientes(); }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+
+</html>

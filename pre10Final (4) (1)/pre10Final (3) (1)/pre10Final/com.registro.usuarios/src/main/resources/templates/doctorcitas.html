@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citas del Doctor</title>
+    <link rel="icon" href="https://i.ibb.co/WNVMdWcm/Whats-App-Image-2025-10-27-at-2-50-55-PM.jpg" type="image/jpeg">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #f8f9fa;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 20px;
+            height: 100%;
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 2px solid rgba(255, 255, 255, 0.2);
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 1050;
+        }
+
+        .sidebar header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .sidebar header img {
+            display: block;
+            margin: 0 auto 15px;
+            max-width: 100px;
+            border-radius: 50%;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            transition: background 0.3s ease, transform 0.2s ease;
+            font-weight: 500;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.03);
+        }
+
+        .sidebar a i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .sidebar .logout a {
+            background-color: #dc3545;
+        }
+
+        .sidebar .logout a:hover {
+            background-color: #c82333;
+        }
+
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+            border-left: 4px solid #ffffff;
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 40px;
+            flex: 1;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            transition: margin-left 0.3s ease;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            color: #0056b3;
+            font-weight: 500;
+        }
+
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1100;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .search-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+        }
+
+        /* Modal de confirmación de cierre de sesión */
+        .modal-confirm {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-confirm-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-confirm-content h3 {
+            color: #dc3545;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .modal-confirm-content p {
+            color: #6c757d;
+            margin-bottom: 25px;
+            font-size: 1rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 100px;
+        }
+
+        .modal-btn-cancel {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .modal-btn-cancel:hover {
+            background-color: #5a6268;
+        }
+
+        .modal-btn-confirm {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .modal-btn-confirm:hover {
+            background-color: #c82333;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                height: 100vh;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .modal-confirm-content {
+                margin: 20% auto;
+                width: 95%;
+            }
+        }
+        /* ========================================= */
+/* OPTIMIZACION */
+/* ========================================= */
+
+#optimizacionSection {
+    display: none;
+}
+
+.card-optimizacion {
+    border-radius: 15px;
+    border: none;
+}
+
+.resultado-card {
+    margin-top: 25px;
+    border-radius: 15px;
+}
+
+.resultado-card h4 {
+    margin-top: 15px;
+}
+
+.resultado-card .alert {
+    margin-top: 20px;
+}
+    </style>
+</head>
+
+<body>
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    <div class="sidebar">
+        <header>
+            <img src="https://i.ibb.co/WNVMdWcm/Whats-App-Image-2025-10-27-at-2-50-55-PM.jpg" alt="logo">
+            <h4><b>Gestión Personal</b></h4>
+        </header>
+        <nav class="nav flex-column">
+            <a class="nav-link active" th:href="@{/citas/verCitas}">
+                <i class="bi bi-calendar-check"></i> Ver Citas
+            </a>
+            <a class="nav-link" th:href="@{/doctor(tab=pacientes)}">
+                <i class="bi bi-person-lines-fill"></i> Ver Pacientes
+            </a>
+            <a class="nav-link" th:href="@{/historial}">
+                <i class="bi bi-journal-medical"></i> Historial Médico
+            </a>
+            <a class="nav-link" th:href="@{/consulta}">
+                <i class="bi bi-search"></i> Buscar Historial Médico
+            </a>
+            <!-- Predicción -->
+            <a class="nav-link" th:href="@{/doctor(tab=prediccion)}">
+                <i class="bi bi-graph-up"></i> Predicción de Adherencia
+            </a>
+            <!-- Asistente IA MCP para Doctores -->
+            <a class="nav-link" th:href="@{/doctor(tab=chatMCP)}">
+                <i class="bi bi-robot"></i> Asistente IA (Citas)
+            </a>
+            <!-- Dashboard NutriVida -->
+            <a class="nav-link" th:href="@{/doctor(tab=dashboardPowerBI)}">
+                <i class="bi bi-graph-up"></i> Dashboard NutriVida
+            </a>
+            <!-- Optimización de Citas -->
+<a class="nav-link" href="#" onclick="mostrarOptimizacion()">
+    <i class="bi bi-bar-chart-line"></i>
+    Optimización de Citas
+</a>
+            
+        </nav>
+        <div class="logout">
+            <a href="#" onclick="confirmLogout(event)" class="btn btn-danger">
+                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+            </a>
+        </div>
+        
+    </div>
+
+    <!-- Modal de confirmación de cierre de sesión -->
+    <div id="logoutModal" class="modal-confirm">
+        <div class="modal-confirm-content">
+            <i class="bi bi-exclamation-triangle" style="font-size: 3rem; color: #dc3545; margin-bottom: 15px;"></i>
+            <h3>¿Cerrar Sesión?</h3>
+            <p>¿Estás seguro de que deseas salir del sistema?<br>Tendrás que iniciar sesión nuevamente para acceder.</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" onclick="closeLogoutModal()">
+                    Cancelar
+                </button>
+                <button class="modal-btn modal-btn-confirm" onclick="performLogout()">
+                    Sí, Cerrar Sesión
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <h1>Citas Asignadas</h1>
+
+        <!-- Mensaje de éxito -->
+        <div th:if="${exito}"
+            style="background-color: rgba(40, 167, 69, 0.1); color: #28a745; padding: 12px 15px; border-radius: 10px; margin-bottom: 20px; font-weight: 500; border-left: 4px solid #28a745; font-size: 0.95rem;">
+            <i class="bi bi-check-circle"></i> <span th:text="${exito}"></span>
+        </div>
+
+        <!-- Buscador -->
+        <div class="search-container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Buscar por paciente, lugar o email..."
+                            id="searchInput">
+                        <button class="btn btn-primary" type="button" id="searchButton">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                        <button class="btn btn-outline-secondary" type="button" id="clearButton">
+                            <i class="bi bi-x-circle"></i> Limpiar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <table class="table table-striped table-bordered" id="citasTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Fecha y Hora</th>
+                    <th>Lugar</th>
+                    <th>Paciente</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody id="citasBody">
+                <tr th:each="cita : ${citas}">
+                    <td th:text="${cita.id}"></td>
+                    <td th:text="${#temporals.format(cita.fechaHora, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${cita.lugar}"></td>
+                    <td th:text="${cita.usuario.nombre} + ' ' + ${cita.usuario.apellido}"></td>
+                    <td th:text="${cita.email}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(citas)}">
+                    <td colspan="5" class="text-center">No tiene citas asignadas.</td>
+                </tr>
+            </tbody>
+        </table>
+        <a th:href="@{/doctor(tab=pacientes)}" class="btn btn-primary mt-3">Volver a Pacientes</a>
+        <!-- ====================================== -->
+<!-- SECCION OPTIMIZACION -->
+<!-- ====================================== -->
+
+<div id="optimizacionSection">
+
+    <div class="container mt-5">
+
+        <h2 class="text-primary mb-4">
+            <i class="bi bi-bar-chart-line"></i>
+            Optimización de Citas Médicas
+        </h2>
+
+        <div class="card shadow p-4 card-optimizacion">
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+                    <label class="form-label">
+                        Localidades
+                    </label>
+
+                    <input type="number"
+                           id="localidades"
+                           class="form-control"
+                           value="3">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">
+                        Consultorios por localidad
+                    </label>
+
+                    <input type="number"
+                           id="consultorios"
+                           class="form-control"
+                           value="3">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">
+                        Capacidad por consultorio
+                    </label>
+
+                    <input type="number"
+                           id="capacidadConsultorio"
+                           class="form-control"
+                           value="10">
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+
+                    <label class="form-label">
+                        Hora inicio
+                    </label>
+
+                    <input type="number"
+                           id="inicio"
+                           class="form-control"
+                           value="7">
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <label class="form-label">
+                        Hora fin
+                    </label>
+
+                    <input type="number"
+                           id="fin"
+                           class="form-control"
+                           value="18">
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <label class="form-label">
+                        Horas almuerzo
+                    </label>
+
+                    <input type="number"
+                           id="almuerzo"
+                           class="form-control"
+                           value="1">
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <h4 class="mb-3">
+                Doctores
+            </h4>
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+
+                    <label class="form-label">
+                        Doctor 1 (min)
+                    </label>
+
+                    <input type="number"
+                           id="doctor1"
+                           class="form-control"
+                           value="45">
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <label class="form-label">
+                        Doctor 2 (min)
+                    </label>
+
+                    <input type="number"
+                           id="doctor2"
+                           class="form-control"
+                           value="30">
+
+                </div>
+
+                <div class="col-md-4">
+
+                    <label class="form-label">
+                        Doctor 3 (min)
+                    </label>
+
+                    <input type="number"
+                           id="doctor3"
+                           class="form-control"
+                           value="80">
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <label class="form-label">
+                        Citas solicitadas
+                    </label>
+
+                    <input type="number"
+                           id="citas"
+                           class="form-control"
+                           value="150">
+
+                </div>
+
+            </div>
+
+            <div class="mt-4">
+
+                <button class="btn btn-primary w-100"
+                        onclick="calcularOptimizacion()">
+
+                    <i class="bi bi-calculator"></i>
+
+                    Calcular Optimización
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- RESULTADOS -->
+
+        <div class="card shadow p-4 resultado-card">
+
+            <div id="resultadoOptimizacion">
+
+                <div class="text-muted">
+
+                    Aquí aparecerán los resultados...
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+    </div>
+
+    
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Funciones para el modal de cierre de sesión
+        function confirmLogout(event) {
+            event.preventDefault();
+            document.getElementById('logoutModal').style.display = 'block';
+        }
+
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'none';
+        }
+
+        function performLogout() {
+            window.location.href = '/logout';
+        }
+
+        // Cerrar modal al hacer clic fuera de él
+        window.onclick = function (event) {
+            const modal = document.getElementById('logoutModal');
+            if (event.target === modal) {
+                closeLogoutModal();
+            }
+        }
+
+        // Cerrar modal con tecla Escape
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closeLogoutModal();
+            }
+        });
+
+        function toggleMenu() {
+            var sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('show');
+        }
+
+        // Funcionalidad del buscador
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('searchInput');
+            const searchButton = document.getElementById('searchButton');
+            const clearButton = document.getElementById('clearButton');
+            const tableBody = document.querySelector('#citasTable tbody');
+
+            function filterCitas() {
+                const searchText = searchInput.value.toLowerCase().trim();
+                const rows = tableBody.querySelectorAll('tr');
+                let visibleCount = 0;
+
+                rows.forEach(row => {
+                    // Saltar la fila de "no resultados" si existe
+                    if (row.id === 'noResults') return;
+
+                    const cells = row.querySelectorAll('td');
+                    let matchFound = false;
+
+                    if (searchText === '') {
+                        matchFound = true;
+                    } else {
+                        for (let i = 0; i < cells.length; i++) {
+                            const cellText = cells[i].textContent.toLowerCase();
+                            if (cellText.includes(searchText)) {
+                                matchFound = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    row.style.display = matchFound ? '' : 'none';
+                    if (matchFound) visibleCount++;
+                });
+
+                // Manejar el mensaje de "no resultados"
+                let noResultsRow = document.getElementById('noResults');
+                if (visibleCount === 0) {
+                    if (!noResultsRow) {
+                        noResultsRow = document.createElement('tr');
+                        noResultsRow.id = 'noResults';
+                        noResultsRow.innerHTML = '<td colspan="5" class="text-center">No se encontraron citas que coincidan con la búsqueda.</td>';
+                        tableBody.appendChild(noResultsRow);
+                    }
+                } else if (noResultsRow) {
+                    noResultsRow.remove();
+                }
+            }
+
+            if (searchButton) searchButton.addEventListener('click', filterCitas);
+            if (searchInput) {
+                searchInput.addEventListener('keyup', function (event) {
+                    if (event.key === 'Enter') {
+                        filterCitas();
+                    }
+                });
+            }
+            if (clearButton) {
+                clearButton.addEventListener('click', function () {
+                    searchInput.value = '';
+                    filterCitas();
+                    searchInput.focus();
+                });
+            }
+        });
+    </script>
+    <script>
+
+    function mostrarOptimizacion() {
+
+        document.getElementById("optimizacionSection")
+            .style.display = "block";
+
+        document.querySelector(".search-container")
+            .style.display = "none";
+
+        document.getElementById("citasTable")
+            .style.display = "none";
+
+    }
+
+    function calcularOptimizacion() {
+
+        let localidades =
+            parseInt(document.getElementById("localidades").value);
+
+        let consultorios =
+            parseInt(document.getElementById("consultorios").value);
+
+        let capacidadConsultorio =
+            parseInt(document.getElementById("capacidadConsultorio").value);
+
+        let inicio =
+            parseInt(document.getElementById("inicio").value);
+
+        let fin =
+            parseInt(document.getElementById("fin").value);
+
+        let almuerzo =
+            parseInt(document.getElementById("almuerzo").value);
+
+        let doctor1 =
+            parseInt(document.getElementById("doctor1").value);
+
+        let doctor2 =
+            parseInt(document.getElementById("doctor2").value);
+
+        let doctor3 =
+            parseInt(document.getElementById("doctor3").value);
+
+        let citas =
+            parseInt(document.getElementById("citas").value);
+
+        // ==========================
+        // HORAS DISPONIBLES
+        // ==========================
+
+        let horasTrabajo =
+            fin - inicio - almuerzo;
+
+        let minutosDisponibles =
+            horasTrabajo * 60;
+
+        // ==========================
+        // CAPACIDAD POR DOCTOR
+        // ==========================
+
+        let capacidad1 =
+            Math.floor(minutosDisponibles / doctor1);
+
+        let capacidad2 =
+            Math.floor(minutosDisponibles / doctor2);
+
+        let capacidad3 =
+            Math.floor(minutosDisponibles / doctor3);
+
+        // ==========================
+        // TOTAL POR LOCALIDAD
+        // ==========================
+
+        let capacidadPorLocalidad =
+            capacidad1 + capacidad2 + capacidad3;
+
+        // ==========================
+        // TOTAL GENERAL
+        // ==========================
+
+        let capacidadTotal =
+            capacidadPorLocalidad * localidades;
+
+        // ==========================
+        // RESTRICCION CONSULTORIOS
+        // ==========================
+
+        let limiteConsultorios =
+            localidades *
+            consultorios *
+            capacidadConsultorio;
+
+        // ==========================
+        // CAPACIDAD REAL
+        // ==========================
+
+        let capacidadReal =
+            Math.min(
+                capacidadTotal,
+                limiteConsultorios
+            );
+
+        // ==========================
+        // CITAS SIN ATENDER
+        // ==========================
+
+        let citasSinAtender =
+            Math.max(
+                0,
+                citas - capacidadReal
+            );
+
+        // ==========================
+        // RECOMENDACION
+        // ==========================
+
+        let recomendacion = "";
+        let tipo = "success";
+
+        if (citasSinAtender == 0) {
+
+            recomendacion =
+                "El sistema puede atender todas las citas.";
+
+            tipo = "success";
+
+        } else if (citasSinAtender <= 10) {
+
+            recomendacion =
+                "Se recomienda ampliar horarios.";
+
+            tipo = "warning";
+
+        } else if (citasSinAtender <= 30) {
+
+            recomendacion =
+                "Se recomienda habilitar más consultorios.";
+
+            tipo = "warning";
+
+        } else {
+
+            recomendacion =
+                "Se recomienda contratar más personal médico.";
+
+            tipo = "danger";
+
+        }
+
+        // ==========================
+        // MOSTRAR RESULTADOS
+        // ==========================
+
+        document.getElementById(
+            "resultadoOptimizacion"
+        ).innerHTML = `
+
+        <div class="alert alert-primary">
+
+            <h3 class="mb-4">
+
+                <i class="bi bi-clipboard-data"></i>
+
+                Resultados
+
+            </h3>
+
+            <p>
+                ⏰ Minutos disponibles:
+                <strong>${minutosDisponibles}</strong>
+            </p>
+
+            <hr>
+
+            <p>
+                👨‍⚕️ Doctor 1:
+                <strong>${capacidad1}</strong>
+                pacientes
+            </p>
+
+            <p>
+                👨‍⚕️ Doctor 2:
+                <strong>${capacidad2}</strong>
+                pacientes
+            </p>
+
+            <p>
+                👨‍⚕️ Doctor 3:
+                <strong>${capacidad3}</strong>
+                pacientes
+            </p>
+
+            <hr>
+
+            <p>
+                🏥 Capacidad médica:
+                <strong>${capacidadTotal}</strong>
+            </p>
+
+            <p>
+                🚪 Límite consultorios:
+                <strong>${limiteConsultorios}</strong>
+            </p>
+
+            <h4 class="text-success">
+
+                ✅ Capacidad REAL:
+                ${capacidadReal}
+
+            </h4>
+
+            <h4 class="text-danger mt-3">
+
+                ❌ Citas sin atender:
+                ${citasSinAtender}
+
+            </h4>
+
+            <div class="alert alert-${tipo} mt-4">
+
+                <strong>Recomendación:</strong>
+                <br>
+
+                ${recomendacion}
+
+            </div>
+
+        </div>
+
+        `;
+    }
+
+</script>
+</body>
+
+</html>

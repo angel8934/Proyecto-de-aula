@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscar Historial Médico - NutriVida</title>
+  <link rel="icon" href="https://i.ibb.co/WNVMdWcm/Whats-App-Image-2025-10-27-at-2-50-55-PM.jpg" type="image/jpeg">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #f8f9fa;
+    }
+
+    .sidebar {
+      width: 250px;
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: white;
+      padding: 20px;
+      height: 100%;
+      position: fixed;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 2px solid rgba(255, 255, 255, 0.2);
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+      z-index: 1050;
+    }
+
+    .sidebar header {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .sidebar header img {
+      display: block;
+      margin: 0 auto 15px;
+      max-width: 100px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 12px 15px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      transition: background 0.3s ease, transform 0.2s ease;
+      font-weight: 500;
+    }
+
+    .sidebar a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.03);
+    }
+
+    .sidebar a i {
+      margin-right: 10px;
+      font-size: 1.2rem;
+    }
+
+    .sidebar .logout a {
+      background-color: #dc3545;
+    }
+
+    .sidebar .logout a:hover {
+      background-color: #c82333;
+    }
+
+    .nav-link.active {
+      background-color: rgba(255, 255, 255, 0.2);
+      font-weight: bold;
+      border-left: 4px solid #ffffff;
+    }
+
+    .content {
+      margin-left: 250px;
+      padding: 40px;
+      flex: 1;
+      overflow-y: auto;
+      background-color: #f8f9fa;
+      transition: margin-left 0.3s ease;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      color: #0056b3;
+    }
+
+    .form-label {
+      font-weight: 500;
+    }
+
+    /* === BOTONES PERSONALIZADOS === */
+    .btn-custom {
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      border: none;
+      color: white;
+      font-weight: 500;
+      border-radius: 25px;
+      padding: 10px 25px;
+      box-shadow: 0 4px 10px rgba(0, 91, 187, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .btn-custom:hover {
+      background: linear-gradient(135deg, #0056b3, #00408f);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0, 91, 187, 0.4);
+    }
+
+    .btn-custom:active {
+      transform: translateY(0);
+      box-shadow: 0 3px 6px rgba(0, 91, 187, 0.3);
+    }
+
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 1100;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    /* Estilos para el modal de confirmación */
+    .modal-confirm {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-confirm-content {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .modal-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .modal-btn-cancel {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .modal-btn-cancel:hover {
+      background-color: #5a6268;
+    }
+
+    .modal-btn-confirm {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .modal-btn-confirm:hover {
+      background-color: #c82333;
+    }
+
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        height: 100vh;
+      }
+
+      .sidebar.show {
+        transform: translateX(0);
+      }
+
+      .content {
+        margin-left: 0;
+        padding: 20px;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+  <div class="sidebar">
+    <header>
+      <img src="https://i.ibb.co/WNVMdWcm/Whats-App-Image-2025-10-27-at-2-50-55-PM.jpg" alt="logo">
+      <h4><b>Gestión Personal</b></h4>
+    </header>
+    <nav class="nav flex-column">
+      <a class="nav-link" href="/citas/verCitas">
+        <i class="bi bi-calendar-check"></i> Ver Citas
+      </a>
+      <a class="nav-link" href="/doctor?tab=pacientes">
+        <i class="bi bi-person-lines-fill"></i> Ver Pacientes
+      </a>
+      <a class="nav-link" href="/historial">
+        <i class="bi bi-journal-medical"></i> Historial Médico
+      </a>
+      <a class="nav-link" href="/consulta">
+        <i class="bi bi-search"></i> Buscar Historial Médico
+      </a>
+      <!-- Nueva opción de Predicción -->
+      <a class="nav-link" href="/doctor?tab=prediccion">
+        <i class="bi bi-graph-up"></i> Predicción de Adherencia
+      </a>
+      <a class="nav-link" href="/doctor?tab=chatMCP">
+        <i class="bi bi-robot"></i> Asistente MCP (Citas)
+      </a>
+      <!-- ✅ NUEVO: Dashboard NutriVida -->
+      <a class="nav-link" href="/doctor?tab=dashboardPowerBI">
+        <i class="bi bi-graph-up"></i> Dashboard NutriVida
+      </a>
+    </nav>
+
+    <!-- Agregado: Enlace de cierre de sesión -->
+    <div class="logout">
+      <a href="#" onclick="confirmLogout(event)">
+        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+      </a>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación de cierre de sesión -->
+  <div id="logoutModal" class="modal-confirm">
+    <div class="modal-confirm-content">
+      <i class="bi bi-exclamation-triangle" style="font-size: 3rem; color: #dc3545; margin-bottom: 15px;"></i>
+      <h3>¿Cerrar Sesión?</h3>
+      <p>¿Estás seguro de que deseas salir del sistema?<br>Tendrás que iniciar sesión nuevamente para acceder.</p>
+      <div class="modal-buttons">
+        <button class="modal-btn modal-btn-cancel" onclick="closeLogoutModal()">
+          Cancelar
+        </button>
+        <button class="modal-btn modal-btn-confirm" onclick="performLogout()">
+          Sí, Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <h1>Buscar Historial Médico por Usuario</h1>
+
+    <form th:action="@{/consulta}" method="post" class="mb-4">
+      <div class="mb-3">
+        <label for="buscarUsuario" class="form-label">Buscar paciente por nombre o apellido</label>
+        <input type="text" id="buscarUsuario" class="form-control" placeholder="Escriba nombre o apellido..."
+          autocomplete="off">
+        <input type="hidden" name="usuarioId" id="consultaUsuarioId">
+        <div id="consultaSuggestions"
+          style="border: 1px solid #dee2e6; border-top: none; border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto; display: none; background: white; position: relative; z-index: 100;">
+        </div>
+        <div id="consultaSeleccionadoInfo" class="mt-2 text-success fw-bold" style="display:none;"></div>
+      </div>
+
+      <div class="d-flex gap-3">
+        <button type="submit" class="btn-custom">Buscar</button>
+        <a href="/doctor?tab=pacientes" class="btn-custom text-decoration-none text-center">Volver a Pacientes</a>
+      </div>
+    </form>
+
+    <div th:if="${historiales != null}">
+      <h2>Historiales Médicos</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Receta</th>
+            <th>Historial</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="historial : ${historiales}">
+            <td th:text="${historial.id}"></td>
+            <td th:text="${historial.receta}"></td>
+            <td th:text="${historial.historial}"></td>
+          </tr>
+          <tr th:if="${#lists.isEmpty(historiales)}">
+            <td colspan="3">No hay historiales para este usuario.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function toggleMenu() {
+      document.querySelector('.sidebar').classList.toggle('show');
+    }
+
+    // Marcar enlace activo
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+      const consultaLink = document.querySelector('a[href="/consulta"]');
+      if (consultaLink) consultaLink.classList.add('active');
+    });
+
+    // ===== BÚSQUEDA AJAX DE PACIENTES =====
+    function seleccionarConsultaPaciente(id, nombre) {
+      document.getElementById('consultaUsuarioId').value = id;
+      document.getElementById('buscarUsuario').value = nombre;
+      document.getElementById('consultaSuggestions').style.display = 'none';
+      const info = document.getElementById('consultaSeleccionadoInfo');
+      info.textContent = '✓ Paciente seleccionado: ' + nombre + ' (ID: ' + id + ')';
+      info.style.display = 'block';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const buscarInput = document.getElementById('buscarUsuario');
+      const suggestionsDiv = document.getElementById('consultaSuggestions');
+      let timer = null;
+
+      if (buscarInput) {
+        buscarInput.addEventListener('input', function () {
+          clearTimeout(timer);
+          const query = this.value.trim();
+
+          if (query.length < 2) {
+            suggestionsDiv.style.display = 'none';
+            return;
+          }
+
+          timer = setTimeout(async () => {
+            try {
+              const res = await fetch(`/api/usuarios/buscar?search=${encodeURIComponent(query)}&size=10`);
+              const data = await res.json();
+
+              if (data.content && data.content.length > 0) {
+                suggestionsDiv.innerHTML = data.content.map(u =>
+                  `<div style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid #f0f0f0; transition: background 0.2s;" 
+                       onmouseover="this.style.background='#e9ecef'" 
+                       onmouseout="this.style.background='white'" 
+                       onclick="seleccionarConsultaPaciente(${u.id}, '${(u.nombre || '').replace(/'/g, "\\'")} ${(u.apellido || '').replace(/'/g, "\\'")}')"
+                  >
+                    <strong>${u.nombre || ''} ${u.apellido || ''}</strong>
+                    <br><small class="text-muted">${u.email || ''} | ID: ${u.id}</small>
+                  </div>`
+                ).join('');
+                suggestionsDiv.style.display = 'block';
+              } else {
+                suggestionsDiv.innerHTML = '<div style="padding: 10px 15px; color: #6c757d;">No se encontraron pacientes</div>';
+                suggestionsDiv.style.display = 'block';
+              }
+            } catch (e) {
+              console.error('Error buscando pacientes:', e);
+            }
+          }, 300);
+        });
+
+        document.addEventListener('click', function (e) {
+          if (!buscarInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+            suggestionsDiv.style.display = 'none';
+          }
+        });
+      }
+
+      // Validar formulario antes de enviar
+      const form = document.querySelector('form');
+      if (form) {
+        form.addEventListener('submit', function (e) {
+          const id = document.getElementById('consultaUsuarioId').value;
+          if (!id) {
+            e.preventDefault();
+            alert('Por favor, busque y seleccione un paciente.');
+            document.getElementById('buscarUsuario').focus();
+          }
+        });
+      }
+    });
+
+    function confirmLogout(event) {
+      event.preventDefault();
+      document.getElementById('logoutModal').style.display = 'flex';
+    }
+
+    function closeLogoutModal() {
+      document.getElementById('logoutModal').style.display = 'none';
+    }
+
+    function performLogout() {
+      window.location.href = '/logout';
+    }
+
+    window.onclick = function (event) {
+      const modal = document.getElementById('logoutModal');
+      if (event.target === modal) {
+        closeLogoutModal();
+      }
+    }
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        closeLogoutModal();
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Historial Médico</title>
+  <link rel="icon" href="https://i.ibb.co/WNVMdWcm/Whats-App-Image-2025-10-27-at-2-50-55-PM.jpg" type="image/jpeg">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #007bff;
+      --primary-dark: #0056b3;
+      --danger-color: #dc3545;
+      --danger-dark: #c82333;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #f8f9fa;
+    }
+
+    .sidebar {
+      width: 250px;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      color: white;
+      padding: 20px;
+      height: 100%;
+      position: fixed;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 2px solid rgba(255, 255, 255, 0.2);
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    .sidebar.hidden {
+      transform: translateX(-100%);
+    }
+
+    .sidebar header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .sidebar header img {
+      display: block;
+      margin: 0 auto 15px;
+      max-width: 100px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar header img:hover {
+      transform: scale(1.05);
+    }
+
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin-bottom: 4px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .sidebar a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    .sidebar a i {
+      margin-right: 10px;
+      font-size: 1.2rem;
+    }
+
+    .sidebar .logout a {
+      background-color: var(--danger-color);
+      border-radius: 8px;
+    }
+
+    .sidebar .logout a:hover {
+      background-color: var(--danger-dark);
+      transform: translateX(5px);
+    }
+
+    .nav-link.active {
+      background-color: rgba(255, 255, 255, 0.2);
+      font-weight: bold;
+      border-left: 4px solid #ffffff;
+    }
+
+    /* Overlay para móviles */
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+
+    .overlay.show {
+      display: block;
+    }
+
+    .content {
+      margin-left: 250px;
+      padding: 40px;
+      flex: 1;
+      overflow-y: auto;
+      background-color: #f8f9fa;
+      transition: margin-left 0.3s ease;
+    }
+
+    h1 {
+      color: var(--primary-dark);
+      margin-bottom: 30px;
+      font-weight: 500;
+    }
+
+    .form-label {
+      font-weight: 500;
+    }
+
+    /* === BOTONES PERSONALIZADOS === */
+    .btn-custom {
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+      border: none;
+      color: white;
+      font-weight: 500;
+      border-radius: 25px;
+      padding: 10px 25px;
+      box-shadow: 0 4px 10px rgba(0, 91, 187, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .btn-custom:hover {
+      background: linear-gradient(135deg, var(--primary-dark), #00408f);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0, 91, 187, 0.4);
+    }
+
+    .btn-custom:active {
+      transform: translateY(0);
+      box-shadow: 0 3px 6px rgba(0, 91, 187, 0.3);
+    }
+
+    .menu-toggle {
+      display: none;
+    }
+
+    /* Modal de confirmación de cierre de sesión */
+    .modal-confirm {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-confirm-content {
+      background-color: white;
+      margin: 15% auto;
+      padding: 30px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .modal-confirm-content h3 {
+      color: #dc3545;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+
+    .modal-confirm-content p {
+      color: #6c757d;
+      margin-bottom: 25px;
+      font-size: 1rem;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      padding: 10px 25px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 100px;
+    }
+
+    .modal-btn-cancel {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .modal-btn-cancel:hover {
+      background-color: #5a6268;
+    }
+
+    .modal-btn-confirm {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .modal-btn-confirm:hover {
+      background-color: #c82333;
+    }
+
+    /* Estilos responsivos */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.show {
+        transform: translateX(0);
+      }
+
+      .content {
+        margin-left: 0;
+        padding: 20px;
+        padding-top: 60px;
+      }
+
+      .menu-toggle {
+        display: block;
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        z-index: 1002;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .modal-confirm-content {
+        margin: 20% auto;
+        width: 95%;
+      }
+    }
+
+    /* Estilos para formularios */
+    .form-control:focus,
+    .form-select:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Botón de menú para móviles -->
+  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+  <!-- Overlay para cerrar el menú en móviles -->
+  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+  <!-- Sidebar mejorado -->
+  <div class="sidebar" id="sidebar">
+    <header>
+      <img src="https://i.ibb.co/WNVMdWcm/Whats-App-Image-2025-10-27-at-2-50-55-PM.jpg" alt="Logo">
+      <h4><b>Gestión Personal</b></h4>
+    </header>
+    <nav class="nav flex-column">
+      <a class="nav-link" href="/citas/verCitas">
+        <i class="bi bi-calendar-check"></i> Ver Citas
+      </a>
+      <a class="nav-link" href="/doctor?tab=pacientes">
+        <i class="bi bi-person-lines-fill"></i> Ver Pacientes
+      </a>
+      <a class="nav-link" href="/historial">
+        <i class="bi bi-journal-medical"></i> Historial Médico
+      </a>
+      <a class="nav-link" href="/consulta">
+        <i class="bi bi-search"></i> Buscar Historial Médico
+      </a>
+      <a class="nav-link" href="/doctor?tab=prediccion">
+        <i class="bi bi-graph-up"></i> Predicción de Adherencia
+      </a>
+      <a class="nav-link" href="/doctor?tab=chatMCP">
+        <i class="bi bi-robot"></i> Asistente IA (Citas)
+      </a>
+      <!-- Dashboard NutriVida -->
+      <a class="nav-link" href="/doctor?tab=dashboardPowerBI">
+        <i class="bi bi-graph-up"></i> Dashboard NutriVida
+      </a>
+    </nav>
+    <div class="logout mt-3">
+      <a href="#" onclick="confirmLogout(event)" class="btn btn-danger w-100">
+        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+      </a>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación de cierre de sesión -->
+  <div id="logoutModal" class="modal-confirm">
+    <div class="modal-confirm-content">
+      <i class="bi bi-exclamation-triangle" style="font-size: 3rem; color: #dc3545; margin-bottom: 15px;"></i>
+      <h3>¿Cerrar Sesión?</h3>
+      <p>¿Estás seguro de que deseas salir del sistema?<br>Tendrás que iniciar sesión nuevamente para acceder.</p>
+      <div class="modal-buttons">
+        <button class="modal-btn modal-btn-cancel" onclick="closeLogoutModal()">
+          Cancelar
+        </button>
+        <button class="modal-btn modal-btn-confirm" onclick="performLogout()">
+          Sí, Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="content">
+    <h1>Crear Historial Médico</h1>
+
+    <form action="/historial/guardar" method="post" id="historial-form">
+      <div class="mb-3">
+        <label for="usuarioBuscar" class="form-label">Buscar Paciente</label>
+        <input type="text" id="usuarioBuscar" class="form-control" placeholder="Escriba nombre o apellido del paciente..." autocomplete="off">
+        <input type="hidden" name="usuario" id="usuarioId">
+        <div id="usuarioSuggestions" style="border: 1px solid #dee2e6; border-top: none; border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto; display: none; background: white; position: relative; z-index: 100;"></div>
+        <div id="usuarioSeleccionadoInfo" class="mt-2 text-success fw-bold" style="display:none;"></div>
+      </div>
+
+      <div class="mb-3">
+        <label for="receta" class="form-label">Receta</label>
+        <textarea name="receta" id="receta" class="form-control" rows="3" required></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label for="historial" class="form-label">Historial Médico</label>
+        <textarea name="historial" id="historial" class="form-control" rows="3" required></textarea>
+      </div>
+
+      <div class="d-flex gap-3">
+        <button type="submit" class="btn-custom">Guardar</button>
+        <a href="/doctor?tab=pacientes" class="btn-custom text-decoration-none text-center">Volver a Pacientes</a>
+      </div>
+    </form>
+
+    <div id="mensaje-exito" class="alert alert-success mt-3" style="display: none;">
+      ¡Historial y receta guardados con éxito!
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Función global para seleccionar paciente desde sugerencias
+    function seleccionarPaciente(id, nombre) {
+      document.getElementById('usuarioId').value = id;
+      document.getElementById('usuarioBuscar').value = nombre;
+      document.getElementById('usuarioSuggestions').style.display = 'none';
+      const info = document.getElementById('usuarioSeleccionadoInfo');
+      info.textContent = '✓ Paciente seleccionado: ' + nombre + ' (ID: ' + id + ')';
+      info.style.display = 'block';
+    }
+    // Funciones para el menú lateral en móviles
+    function toggleMenu() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+
+      if (!sidebar || !overlay) return;
+
+      sidebar.classList.toggle('show');
+      overlay.classList.toggle('show');
+
+      // Prevenir scroll del body cuando el menú está abierto
+      document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : 'auto';
+    }
+
+    // Funciones para el modal de cierre de sesión
+    function confirmLogout(event) {
+      event.preventDefault();
+      document.getElementById('logoutModal').style.display = 'block';
+    }
+
+    function closeLogoutModal() {
+      document.getElementById('logoutModal').style.display = 'none';
+    }
+
+    function performLogout() {
+      window.location.href = '/logout';
+    }
+
+    // Cerrar modal al hacer clic fuera de él
+    window.onclick = function (event) {
+      const modal = document.getElementById('logoutModal');
+      if (event.target === modal) {
+        closeLogoutModal();
+      }
+    }
+
+    // Cerrar modal con tecla Escape
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        closeLogoutModal();
+      }
+    });
+
+    // Cerrar menú lateral al presionar Escape
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar && sidebar.classList.contains('show')) {
+          toggleMenu();
+        }
+      }
+    });
+
+    // Marcar enlace activo y cerrar menú en móviles al navegar
+    document.addEventListener('DOMContentLoaded', function () {
+      // Remover active de todos los enlaces
+      document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+
+      // Agregar active al enlace de Historial Médico (página actual)
+      const historialLink = document.querySelector('a[href="/historial"]');
+      if (historialLink) {
+        historialLink.classList.add('active');
+      }
+
+      // Configurar event listeners para los enlaces del menú
+      document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+        link.addEventListener('click', function () {
+          // En móviles, cerrar el menú después de hacer clic
+          if (window.innerWidth <= 768) {
+            toggleMenu();
+          }
+        });
+      });
+    });
+
+    // Manejar el envío del formulario
+    document.getElementById('historial-form').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      
+      // Validar que se haya seleccionado un paciente
+      const usuarioId = document.getElementById('usuarioId').value;
+      if (!usuarioId) {
+        alert('Por favor, busque y seleccione un paciente.');
+        document.getElementById('usuarioBuscar').focus();
+        return;
+      }
+
+      const form = this;
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch(form.action, {
+          method: form.method,
+          body: formData
+        });
+
+        if (response.ok) {
+          form.reset();
+          document.getElementById('usuarioId').value = '';
+          document.getElementById('usuarioSeleccionadoInfo').style.display = 'none';
+          const msg = document.getElementById('mensaje-exito');
+          msg.style.display = 'block';
+          setTimeout(() => msg.style.display = 'none', 3000);
+        } else {
+          alert('Error al guardar el historial. Intente nuevamente.');
+        }
+      } catch (error) {
+        console.error('Error al guardar el historial:', error);
+        alert('Error de conexión. Verifique su conexión a internet.');
+      }
+    });
+    
+    // ===== BÚSQUEDA AJAX DE PACIENTES =====
+    const buscarInput = document.getElementById('usuarioBuscar');
+    const suggestionsDiv = document.getElementById('usuarioSuggestions');
+    let buscarTimer = null;
+    
+    if (buscarInput) {
+      buscarInput.addEventListener('input', function() {
+        clearTimeout(buscarTimer);
+        const query = this.value.trim();
+        
+        if (query.length < 2) {
+          suggestionsDiv.style.display = 'none';
+          return;
+        }
+        
+        buscarTimer = setTimeout(async () => {
+          try {
+            const res = await fetch(`/api/usuarios/buscar?search=${encodeURIComponent(query)}&size=10`);
+            const data = await res.json();
+            
+            if (data.content && data.content.length > 0) {
+              suggestionsDiv.innerHTML = data.content.map(u => 
+                `<div style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid #f0f0f0; transition: background 0.2s;" 
+                     onmouseover="this.style.background='#e9ecef'" 
+                     onmouseout="this.style.background='white'" 
+                     onclick="seleccionarPaciente(${u.id}, '${(u.nombre||'').replace(/'/g, "\\'")} ${(u.apellido||'').replace(/'/g, "\\'")}')"
+                >
+                  <strong>${u.nombre || ''} ${u.apellido || ''}</strong>
+                  <br><small class="text-muted">${u.email || ''} | ID: ${u.id}</small>
+                </div>`
+              ).join('');
+              suggestionsDiv.style.display = 'block';
+            } else {
+              suggestionsDiv.innerHTML = '<div style="padding: 10px 15px; color: #6c757d;">No se encontraron pacientes</div>';
+              suggestionsDiv.style.display = 'block';
+            }
+          } catch(e) {
+            console.error('Error buscando pacientes:', e);
+          }
+        }, 300);
+      });
+      
+      // Cerrar sugerencias al hacer clic fuera
+      document.addEventListener('click', function(e) {
+        if (!buscarInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+          suggestionsDiv.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>

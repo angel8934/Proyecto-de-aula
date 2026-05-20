@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Gestión de Personal - Nutri Vida</title>
+	<link rel="icon" href="https://i.ibb.co/WNVMdWcm/Whats-App-Image-2025-10-27-at-2-50-55-PM.jpg" type="image/jpeg">
+
+	<!-- Bootstrap 5 -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+	<style>
+		/* Ajustes generales */
+		body {
+			font-family: 'Poppins', sans-serif;
+			height: 100vh;
+			margin: 0;
+			display: flex;
+			overflow: hidden;
+		}
+
+		/* Sidebar */
+		.sidebar {
+			width: 250px;
+			background: linear-gradient(135deg, #007bff, #0056b3);
+			color: white;
+			padding: 20px;
+			height: 100%;
+			position: fixed;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			border-right: 2px solid rgba(255, 255, 255, 0.2);
+		}
+
+		.sidebar header {
+			text-align: center;
+			margin-bottom: 20px;
+		}
+
+		.sidebar header img {
+			display: block;
+			margin: 0 auto 15px;
+			max-width: 100px;
+			border-radius: 50%;
+		}
+
+		.sidebar nav {
+			flex-grow: 1;
+		}
+
+		.sidebar a {
+			color: white;
+			text-decoration: none;
+			display: block;
+			padding: 10px;
+			border-radius: 5px;
+			margin-bottom: 10px;
+			transition: background 0.3s ease, transform 0.2s ease;
+		}
+
+		.sidebar a:hover {
+			background: #00448f;
+			transform: scale(1.05);
+		}
+
+		.sidebar a i {
+			margin-right: 10px;
+			font-size: 1.2rem;
+		}
+
+		.sidebar .logout a {
+			background-color: #dc3545;
+			color: white;
+			padding: 10px;
+			border-radius: 5px;
+			display: inline-block;
+			text-align: center;
+			width: 100%;
+			transition: background-color 0.3s ease;
+		}
+
+		.sidebar .logout a:hover {
+			background-color: #c82333;
+			text-decoration: none;
+		}
+
+		.nav-link.active {
+			background-color: #0056b3;
+			font-weight: bold;
+			border-left: 4px solid #ffffff;
+		}
+
+		/* Content */
+		.content {
+			margin-left: 250px;
+			padding: 40px;
+			background-color: #f8f9fa;
+			flex: 1;
+			overflow-y: auto;
+		}
+
+		h2 {
+			margin-bottom: 30px;
+			font-weight: 500;
+		}
+
+		.color {
+			color: #0056b3;
+		}
+
+		button {
+			background-color: #007bff;
+			border-color: #0056b3;
+			border-radius: 20px;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+			transition: background-color 0.3s ease, transform 0.2s;
+			color: white;
+		}
+
+		button:hover {
+			background-color: #0056b3;
+			transform: scale(1.05);
+			color: white;
+		}
+
+		.form-control {
+			margin-bottom: 20px;
+			padding: 10px;
+			font-size: 1rem;
+			border-radius: 10px;
+			border: 1px solid #007bff;
+			box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+			transition: box-shadow 0.3s ease;
+		}
+
+		.form-control:focus {
+			box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+		}
+
+		.appointment-form,
+		.imc-form {
+			background-color: white;
+			padding: 30px;
+			border-radius: 15px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			max-width: 600px;
+			margin: 0 auto;
+		}
+
+		.appointment-form h2,
+		.imc-form h2 {
+			text-align: center;
+			margin-bottom: 20px;
+			color: #0056b3;
+		}
+
+		.accordion-button {
+			font-weight: bold;
+			color: #007bff;
+		}
+
+		.accordion-item {
+			border: 1px solid #0056b3;
+			border-radius: 8px;
+			margin-bottom: 10px;
+		}
+
+		.result-section {
+			margin-top: 20px;
+			background-color: #f0f8ff;
+			padding: 15px;
+			border-radius: 10px;
+			text-align: center;
+		}
+
+		.result-section h4 {
+			color: #007bff;
+		}
+
+		.accordion-button {
+			color: #007bff;
+			background-color: #f8f9fa;
+		}
+
+		.accordion-button:not(.collapsed) {
+			background-color: #007bff;
+			color: white;
+		}
+
+		/* Inicialmente oculta la sección del IMC */
+		#imcResult {
+			display: none;
+		}
+
+		/* Inicialmente oculta los formularios de cálculo */
+		#preciseMenu,
+		#normalMenu {
+			display: none;
+		}
+
+		/* Dashboard Power BI */
+		.dashboard-container {
+			position: relative;
+			padding-bottom: 56.25%;
+			height: 0;
+			overflow: hidden;
+			border-radius: 20px;
+			box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+			background-color: white;
+			margin: 30px 0;
+		}
+
+		.dashboard-container iframe {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			border: none;
+		}
+
+		/* Cambios en el estilo de la sección de Recomendaciones */
+		#recomendaciones h2 {
+			color: #0056b3;
+		}
+
+		/* Cambios en el estilo de la sección de Historial */
+		#historial h2 {
+			color: #0056b3;
+		}
+
+		/* Modal de confirmación */
+		.modal-confirm {
+			display: none;
+			position: fixed;
+			z-index: 10000;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.5);
+		}
+
+		.modal-confirm-content {
+			background-color: white;
+			margin: 15% auto;
+			padding: 30px;
+			border-radius: 15px;
+			width: 90%;
+			max-width: 400px;
+			text-align: center;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+			animation: modalSlideIn 0.3s ease;
+		}
+
+		@keyframes modalSlideIn {
+			from {
+				transform: translateY(-50px);
+				opacity: 0;
+			}
+
+			to {
+				transform: translateY(0);
+				opacity: 1;
+			}
+		}
+
+		.modal-confirm-content h3 {
+			color: #dc3545;
+			margin-bottom: 15px;
+			font-weight: 600;
+		}
+
+		.modal-confirm-content p {
+			color: #6c757d;
+			margin-bottom: 25px;
+			font-size: 1rem;
+		}
+
+		.modal-buttons {
+			display: flex;
+			gap: 15px;
+			justify-content: center;
+		}
+
+		.modal-btn {
+			padding: 10px 25px;
+			border: none;
+			border-radius: 8px;
+			font-weight: 500;
+			cursor: pointer;
+			transition: all 0.3s ease;
+			min-width: 100px;
+		}
+
+		.modal-btn-cancel {
+			background-color: #6c757d;
+			color: white;
+		}
+
+		.modal-btn-cancel:hover {
+			background-color: #5a6268;
+		}
+
+		.modal-btn-confirm {
+			background-color: #dc3545;
+			color: white;
+		}
+
+		.modal-btn-confirm:hover {
+			background-color: #c82333;
+		}
+
+		/* Media Queries para responsividad */
+		@media (max-width: 768px) {
+			.sidebar {
+				width: 100%;
+				height: auto;
+				position: relative;
+				display: none;
+			}
+
+			.content {
+				margin-left: 0;
+			}
+
+			.sidebar nav {
+				display: flex;
+				flex-direction: column;
+				justify-content: space-around;
+			}
+
+			.sidebar a {
+				margin-bottom: 0;
+				padding: 10px 5px;
+			}
+
+			.sidebar header,
+			.sidebar .logout {
+				display: none;
+			}
+
+			.sidebar.show {
+				display: block;
+			}
+
+			.modal-confirm-content {
+				margin: 20% auto;
+				width: 95%;
+			}
+
+			.dashboard-container {
+				margin: 20px 0;
+			}
+		}
+
+		.menu-toggle {
+			display: none;
+		}
+
+		@media (max-width: 768px) {
+			.menu-toggle {
+				display: block;
+				position: fixed;
+				top: 10px;
+				left: 10px;
+				z-index: 1000;
+				background-color: #007bff;
+				color: white;
+				border: none;
+				padding: 10px;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+		}
+
+		::-webkit-scrollbar {
+			width: 8px;
+		}
+
+		::-webkit-scrollbar-track {
+			background: #f1f1f1;
+		}
+
+		::-webkit-scrollbar-thumb {
+			background: #007bff;
+			border-radius: 20px;
+		}
+
+		::-webkit-scrollbar-thumb:hover {
+			background: #0056b3;
+		}
+
+		/* Sidebar header enhancement */
+		.sidebar header img {
+			border: 3px solid rgba(255, 255, 255, 0.3);
+			transition: transform 0.3s ease;
+		}
+
+		.sidebar header img:hover {
+			transform: scale(1.05);
+		}
+
+		/* Tab pane transitions */
+		.tab-pane {
+			animation: fadeIn 0.4s ease;
+		}
+
+		@keyframes fadeIn {
+			from {
+				opacity: 0;
+				transform: translateY(10px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		@keyframes pulse {
+
+			0%,
+			100% {
+				opacity: 1;
+			}
+
+			50% {
+				opacity: 0.5;
+			}
+		}
+
+		/* Active nav link enhancement */
+		.sidebar .nav-link.active {
+			background: rgba(255, 255, 255, 0.15);
+			border-radius: 8px;
+			border-left: 4px solid #ffffff;
+			font-weight: 600;
+		}
+
+		.sidebar .nav-link {
+			border-radius: 8px;
+			margin-bottom: 5px;
+			padding: 12px 15px;
+			font-weight: 400;
+			transition: all 0.3s ease;
+		}
+
+		.sidebar .nav-link:hover {
+			background: rgba(255, 255, 255, 0.1);
+			transform: translateX(5px);
+		}
+
+		.sidebar .nav-link i {
+			margin-right: 10px;
+			font-size: 1.1rem;
+		}
+	</style>
+</head>
+
+<body>
+
+	<button class="menu-toggle" onclick="toggleMenu()">☰</button>
+	<div class="sidebar">
+
+		<header>
+			<img src="https://i.ibb.co/WNVMdWcm/Whats-App-Image-2025-10-27-at-2-50-55-PM.jpg" alt="logo">
+			<h4><b>Gestión Personal</b></h4>
+		</header>
+
+		<nav class="nav flex-column">
+			<a class="nav-link active" data-bs-toggle="tab" href="#imc" aria-controls="imc" aria-selected="true"> <i
+					class="bi bi-calculator"></i> Calcular IMC
+			</a> <a class="nav-link" href="#" onclick="window.location.href='/citas/apartado'; return false;">
+				<i class="bi bi-calendar-plus"></i> Apartar Cita
+			</a> <a class="nav-link" href="#" onclick="window.location.href='/citas/mis'; return false;">
+				<i class="bi bi-calendar-check"></i> Ver Citas
+			</a> <a class="nav-link" data-bs-toggle="tab" href="#recomendaciones" aria-controls="recomendaciones"
+				aria-selected="false"> <i class="bi bi-info-circle"></i> Recomendaciones
+			</a> <a class="nav-link" data-bs-toggle="tab" href="#historial" aria-controls="historial"
+				aria-selected="false"> <i class="bi bi-clipboard-data"></i> Historial IMC
+			</a> <a class="nav-link" data-bs-toggle="tab" href="#verRecetas" aria-controls="verRecetas"
+				aria-selected="false"> <i class="bi bi-file-earmark-medical"></i> Valores Nutricionales
+			</a>
+			<a class="nav-link" data-bs-toggle="tab" href="#chatIA">
+				<i class="bi bi-robot"></i> Asistente IA
+			</a>
+			<!-- Nuevo enlace para Dashboard Power BI -->
+			<a class="nav-link" data-bs-toggle="tab" href="#dashboardPowerBI">
+				<i class="bi bi-graph-up"></i> Dashboard NutriVida
+			</a>
+		</nav>
+
+		<div class="logout">
+			<ul class="nav navbar-nav">
+				<li sec:authorize="isAuthenticated()">
+					<a href="#" onclick="confirmLogout(event)">
+						<i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+					</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+
+	<!-- Modal de confirmación de cierre de sesión -->
+	<div id="logoutModal" class="modal-confirm">
+		<div class="modal-confirm-content">
+			<i class="bi bi-exclamation-triangle" style="font-size: 3rem; color: #dc3545; margin-bottom: 15px;"></i>
+			<h3>¿Cerrar Sesión?</h3>
+			<p>¿Estás seguro de que deseas salir del sistema?<br>Tendrás que iniciar sesión nuevamente para acceder.</p>
+			<div class="modal-buttons">
+				<button class="modal-btn modal-btn-cancel" onclick="closeLogoutModal()">
+					Cancelar
+				</button>
+				<button class="modal-btn modal-btn-confirm" onclick="performLogout()">
+					Sí, Cerrar Sesión
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="content">
+		<div class="tab-content">
+			<div id="imc" class="tab-pane fade show active">
+				<div class="imc-form">
+
+					<h2 class="text-center">Calcular IMC</h2>
+
+					<div class="d-flex justify-content-center mb-3">
+						<button id="preciseCalcBtn" class="btn btn-primary me-2">Cálculo más preciso</button>
+						<button id="normalCalcBtn" class="btn btn-secondary">Cálculo normal</button>
+					</div>
+
+					<div class="container text-center">
+						<h9>Bienvenido <span sec:authentication="principal.username"></span></h9>
+					</div>
+
+					<!-- Menú preciso -->
+					<div id="preciseMenu" class="menu">
+						<form id="preciseImcForm" class="needs-validation" novalidate>
+							<div class="mb-3">
+								<label for="peso" class="form-label">Peso (kg):</label>
+								<input type="number" class="form-control" id="peso" name="peso" max="200" min="0"
+									required>
+								<div class="invalid-feedback">Por favor, ingresa un peso válido.</div>
+							</div>
+							<div class="mb-3">
+								<label for="altura" class="form-label">Altura (cm):</label>
+								<input type="number" class="form-control" id="altura" name="altura" max="230" min="0"
+									required>
+								<div class="invalid-feedback">Por favor, ingresa una altura válida.</div>
+							</div>
+							<div class="mb-3">
+								<label for="edad" class="form-label">Edad:</label>
+								<input type="number" class="form-control" id="edad" name="edad" max="120" min="0"
+									required>
+								<div class="invalid-feedback">Por favor, ingresa una edad válida.</div>
+							</div>
+							<div class="mb-3">
+								<label for="sexo" class="form-label">Sexo:</label>
+								<select class="form-control" id="sexo" name="sexo" required>
+									<option value="" disabled selected>Selecciona tu sexo</option>
+									<option value="mujer">Mujer</option>
+									<option value="hombre">Hombre</option>
+								</select>
+								<div class="invalid-feedback">Por favor, selecciona tu sexo.</div>
+							</div>
+							<div class="mb-3">
+								<label for="cintura" class="form-label">Circunferencia de la cintura (cm):</label>
+								<input type="number" class="form-control" id="cintura" name="cintura" max="110" min="0"
+									required>
+								<div class="invalid-feedback">Por favor, ingresa una medida válida.</div>
+							</div>
+							<div class="mb-3">
+								<label for="cadera" class="form-label">Circunferencia de la cadera (cm):</label>
+								<input type="number" class="form-control" id="cadera" name="cadera" max="110" min="0"
+									required>
+								<div class="invalid-feedback">Por favor, ingresa una medida válida.</div>
+							</div>
+							<button type="submit" class="btn btn-primary w-100">Calcular</button>
+							<button type="button" class="btn btn-secondary w-100 mt-2" id="saveImcButton">Guardar en
+								Historial</button>
+						</form>
+					</div>
+
+					<!-- Menú normal -->
+					<div id="normalMenu" class="menu">
+						<form id="normalImcForm" class="needs-validation" novalidate>
+							<div class="mb-3">
+								<label for="pesoNormal" class="form-label">Peso (kg):</label>
+								<input type="number" class="form-control" id="pesoNormal" name="pesoNormal" max="200"
+									min="0" required>
+								<div class="invalid-feedback">Por favor, ingresa un peso válido</div>
+							</div>
+							<div class="mb-3">
+								<label for="alturaNormal" class="form-label">Altura (cm):</label>
+								<input type="number" class="form-control" id="alturaNormal" name="alturaNormal"
+									max="230" min="0" required>
+								<div class="invalid-feedback">Por favor, ingresa una altura válida.</div>
+							</div>
+							<button type="submit" class="btn btn-primary w-100">Calcular</button>
+							<button type="button" class="btn btn-secondary w-100 mt-2" id="saveNormalImcButton">Guardar
+								en Historial</button>
+						</form>
+					</div>
+
+					<!-- Resultado del IMC -->
+					<div class="result-section" id="imcResult">
+						<h4>Tu IMC es: <span id="imcValue"></span></h4>
+						<p>Según tu IMC, estás en la categoría de <span id="imcCategory"></span></p>
+						<p>Porcentaje de grasa corporal: <span id="grasaCorporal"></span>%</p>
+						<p>Riesgo según circunferencia de cintura: <span id="riesgoCintura"></span></p>
+						<p>Riesgo según relación cintura-cadera: <span id="riesgoCinturaCadera"></span></p>
+					</div>
+
+				</div>
+
+				<!-- FORMULARIO OCULTO ÚNICO PARA GUARDAR IMC -->
+				<form id="guardarImcForm" action="/paciente/guardar-imc" method="POST" style="display:none;">
+					<input type="hidden" name="imc" id="hiddenImc">
+					<input type="hidden" name="categoria" id="hiddenCategoria">
+				</form>
+
+			</div>
+
+			<div id="recomendaciones" class="tab-pane fade">
+				<h2>Recomendaciones según IMC</h2>
+				<div class="accordion" id="recomendacionesAccordion">
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="headingBajoPeso">
+							<button class="accordion-button" type="button" data-bs-toggle="collapse"
+								data-bs-target="#collapseBajoPeso" aria-expanded="true"
+								aria-controls="collapseBajoPeso">
+								Bajo Peso (IMC < 18.5)</button>
+						</h2>
+						<div id="collapseBajoPeso" class="accordion-collapse collapse show"
+							aria-labelledby="headingBajoPeso" data-bs-parent="#recomendacionesAccordion">
+							<div class="accordion-body">
+								<ul>
+									<li>Aumenta el consumo de calorías con alimentos
+										nutritivos como frutos secos, aguacates y proteínas magras.</li>
+									<li>Considera realizar varias comidas pequeñas al día en
+										lugar de grandes comidas.</li>
+									<li>Consulta a un nutricionista para asegurar un aumento
+										de peso saludable.</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="headingPesoNormal">
+							<button class="accordion-button" type="button" data-bs-toggle="collapse"
+								data-bs-target="#collapsePesoNormal" aria-expanded="false"
+								aria-controls="collapsePesoNormal">
+								Peso Normal (IMC 18.5 - 24.9)</button>
+						</h2>
+						<div id="collapsePesoNormal" class="accordion-collapse collapse"
+							aria-labelledby="headingPesoNormal" data-bs-parent="#recomendacionesAccordion">
+							<div class="accordion-body">
+								<ul>
+									<li>Continúa con una dieta equilibrada que incluya
+										frutas, verduras, proteínas y granos enteros.</li>
+									<li>Realiza actividad física regularmente para mantener
+										tu peso y salud general.</li>
+									<li>Consulta anualmente a un médico para chequeos de
+										salud.</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="headingSobrepeso">
+							<button class="accordion-button" type="button" data-bs-toggle="collapse"
+								data-bs-target="#collapseSobrepeso" aria-expanded="false"
+								aria-controls="collapseSobrepeso">
+								Sobrepeso (IMC 25 - 29.9)</button>
+						</h2>
+						<div id="collapseSobrepeso" class="accordion-collapse collapse"
+							aria-labelledby="headingSobrepeso" data-bs-parent="#recomendacionesAccordion">
+							<div class="accordion-body">
+								<ul>
+									<li>Reduce el consumo de azúcares y grasas saturadas.</li>
+									<li>Aumenta la actividad física a al menos 150 minutos a
+										la semana.</li>
+									<li>Considera trabajar con un nutricionista para
+										establecer un plan de alimentación saludable.</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="headingObesidad">
+							<button class="accordion-button" type="button" data-bs-toggle="collapse"
+								data-bs-target="#collapseObesidad" aria-expanded="false"
+								aria-controls="collapseObesidad">
+								Obesidad (IMC ≥ 30)</button>
+						</h2>
+						<div id="collapseObesidad" class="accordion-collapse collapse" aria-labelledby="headingObesidad"
+							data-bs-parent="#recomendacionesAccordion">
+							<div class="accordion-body">
+								<ul>
+									<li>Consulta a un médico para evaluar tu salud general y
+										posibles riesgos.</li>
+									<li>Considera un plan de pérdida de peso supervisado por
+										profesionales de la salud.</li>
+									<li>Incorpora cambios de estilo de vida sostenibles, como
+										una dieta balanceada y ejercicio regular.</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div id="historial" class="tab-pane fade">
+				<h2>Historial de IMC</h2>
+				<table class="table table-striped" id="historialImcTable">
+					<thead>
+						<tr>
+							<th>Fecha</th>
+							<th>IMC</th>
+							<th>Categoría</th>
+						</tr>
+					</thead>
+					<tbody>
+						<!-- filas se llenarán con JS -->
+					</tbody>
+				</table>
+			</div>
+
+			<div id="verRecetas" class="tab-pane fade">
+				<h2>Valores Nutricionales</h2>
+				<p>Consulta los valores nutricionales de diferentes alimentos:</p>
+
+				<div id="recetasContainer">
+					<div class="mb-3">
+						<input type="text" id="buscarAlimento" class="form-control" placeholder="Buscar alimento...">
+					</div>
+
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>Seleccionar</th>
+								<th>Alimento</th>
+								<th>Calorías</th>
+								<th>Proteínas (g)</th>
+								<th>Grasas (g)</th>
+								<th>Carbohidratos (g)</th>
+							</tr>
+						</thead>
+						<tbody id="tablaNutricional">
+							<tr>
+								<td colspan="6">Cargando datos...</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<button id="calcularTotales" class="btn btn-primary mt-3">Calcular
+						totales</button>
+
+					<!-- Lista de alimentos seleccionados -->
+					<div id="alimentosSeleccionados" class="mt-3">
+						<h5>Alimentos seleccionados:</h5>
+						<ul id="listaAlimentos" class="list-group"></ul>
+					</div>
+
+					<!-- Contenedor para mostrar resultados -->
+					<div id="resultadoTotales" class="mt-3"></div>
+					<!-- Botón para guardar -->
+					<button id="guardarRegistro" class="btn btn-success mt-3" style="display: none;">Guardar registro
+						del día</button>
+				</div>
+			</div>
+
+			<div id="chatIA" class="tab-pane fade">
+				<div style="width: 100%;">
+					<!-- Header del chat -->
+					<div
+						style="background: linear-gradient(135deg, #007bff, #0056b3); border-radius: 15px 15px 0 0; padding: 20px 25px; color: white;">
+						<div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+							<div
+								style="width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+								<i class="bi bi-robot" style="font-size: 1.5rem;"></i>
+							</div>
+							<div style="flex: 1; min-width: 150px;">
+								<h4 style="margin: 0; font-weight: 600; font-size: 1.2rem;">Asistente Médico IA</h4>
+								<small style="opacity: 0.85;">
+									<span
+										style="display: inline-block; width: 8px; height: 8px; background: #28a745; border-radius: 50%; margin-right: 5px; animation: pulse 2s infinite;"></span>
+									En línea — Listo para ayudarte
+								</small>
+							</div>
+							<div>
+								<select id="modeloSelector"
+									style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 20px; font-size: 0.85rem; padding: 6px 14px; cursor: pointer; outline: none;">
+									<option value="openai" style="color: #333;">🤖 OpenAI GPT</option>
+									<option value="ollama" style="color: #333;">🏠 Ollama Local</option>
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<!-- Cuerpo del chat -->
+					<div id="chatBox"
+						style="border: 1px solid #dee2e6; border-top: none; height: calc(100vh - 380px); min-height: 300px; overflow-y: auto; padding: 20px; background: linear-gradient(180deg, #f0f4f8 0%, #ffffff 100%);">
+						<div style="text-align: center; padding: 40px 10px;">
+							<div
+								style="width: 70px; height: 70px; background: linear-gradient(135deg, #007bff, #0056b3); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+								<i class="bi bi-heart-pulse" style="font-size: 1.8rem; color: white;"></i>
+							</div>
+							<p style="color: #6c757d; font-size: 0.95rem; margin-bottom: 5px;">¡Hola! Soy tu asistente
+								médico virtual.</p>
+							<p style="color: #adb5bd; font-size: 0.85rem;">Puedo ayudarte con consultas sobre salud,
+								nutrición y bienestar.</p>
+						</div>
+					</div>
+
+					<!-- Sugerencias -->
+					<div style="background: #f8f9fa; border: 1px solid #dee2e6; border-top: none; padding: 10px 15px;">
+						<div style="display: flex; flex-wrap: wrap; gap: 6px;">
+							<button class="btn btn-outline-primary btn-sm"
+								onclick="usarSugerencia('¿Qué debo comer si tengo colesterol alto?')"
+								style="border-radius: 20px; font-size: 0.75rem;">🥗 Colesterol alto</button>
+							<button class="btn btn-outline-primary btn-sm"
+								onclick="usarSugerencia('¿Cuánta agua debo tomar al día?')"
+								style="border-radius: 20px; font-size: 0.75rem;">💧 Agua diaria</button>
+							<button class="btn btn-outline-primary btn-sm"
+								onclick="usarSugerencia('¿Cuáles son los síntomas de la diabetes?')"
+								style="border-radius: 20px; font-size: 0.75rem;">🩺 Síntomas diabetes</button>
+							<button class="btn btn-outline-primary btn-sm"
+								onclick="usarSugerencia('Dame consejos para bajar de peso')"
+								style="border-radius: 20px; font-size: 0.75rem;">⚖️ Bajar de peso</button>
+							<button class="btn btn-outline-primary btn-sm"
+								onclick="usarSugerencia('¿Qué alimentos tienen más proteína?')"
+								style="border-radius: 20px; font-size: 0.75rem;">💪 Proteínas</button>
+						</div>
+					</div>
+
+					<!-- Input del chat -->
+					<div
+						style="background: white; border: 1px solid #dee2e6; border-top: none; border-radius: 0 0 15px 15px; padding: 12px 15px;">
+						<div class="input-group" style="align-items: stretch;">
+							<input type="text" id="mensaje" class="form-control"
+								placeholder="Escribe tu consulta médica..."
+								onkeypress="if(event.key==='Enter') enviarMensaje()"
+								style="border-radius: 25px 0 0 25px; border: 2px solid #dee2e6; padding: 10px 18px; height: 44px;">
+							<button class="btn btn-primary" onclick="enviarMensaje()"
+								style="border-radius: 0 25px 25px 0; padding: 0 16px; height: 44px; display: flex; align-items: center; justify-content: center; border: none;">
+								<i class="bi bi-send-fill" style="font-size: 1.1rem;"></i>
+							</button>
+						</div>
+						<div style="text-align: center; margin-top: 6px;">
+							<small style="color: #adb5bd; font-size: 0.72rem;">
+								<i class="bi bi-shield-check"></i> Este asistente no reemplaza una consulta médica real.
+							</small>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- NUEVA SECCIÓN: DASHBOARD POWER BI AL FINAL -->
+			<div id="dashboardPowerBI" class="tab-pane fade">
+				<div style="text-align: center; margin-bottom: 25px;">
+					<h2 style="color: #0056b3; border-bottom: none;">📊 Dashboard Nutri Vida</h2>
+					<p style="color: #6c757d;">Visualiza métricas clave sobre los usuarios, estadísticas
+						y tendencias en nuestra comunidad.</p>
+				</div>
+				<div class="dashboard-container">
+					<iframe title="NutriVida Dashboard"
+						src="https://app.powerbi.com/view?r=eyJrIjoiMzM3NzhiNTUtZTE3MS00ZWMxLTg2MTEtNTIyYTk1ZTgxYjFmIiwidCI6IjlkMTJiZjNmLWU0ZjYtNDdhYi05MTJmLTFhMmYwZmM0OGFhNCIsImMiOjR9"
+						allowFullScreen="true">
+					</iframe>
+				</div>
+				<p class="text-muted text-center mt-3" style="font-size: 0.85rem; color: #6c757d;">
+					<i class="bi bi-info-circle"></i> Los datos se actualizan automáticamente desde nuestra base de
+					datos.
+				</p>
+			</div>
+
+		</div>
+	</div>
+
+	<script>
+		// Funciones para el modal de cierre de sesión
+		function confirmLogout(event) {
+			event.preventDefault();
+			document.getElementById('logoutModal').style.display = 'block';
+		}
+
+		function closeLogoutModal() {
+			document.getElementById('logoutModal').style.display = 'none';
+		}
+
+		function performLogout() {
+			window.location.href = '/logout';
+		}
+
+		window.onclick = function (event) {
+			const modal = document.getElementById('logoutModal');
+			if (event.target === modal) {
+				closeLogoutModal();
+			}
+		}
+
+		document.addEventListener('keydown', function (event) {
+			if (event.key === 'Escape') {
+				closeLogoutModal();
+			}
+		});
+	</script>
+
+	<script>
+		async function cargarComidas() {
+			try {
+				const res = await fetch('/api/comidas');
+				if (!res.ok) throw new Error('Error al obtener los datos');
+				const comidas = await res.json();
+				mostrarComidas(comidas);
+				window.listaComidas = comidas;
+			} catch (error) {
+				const tbody = document.querySelector('#tablaNutricional');
+				tbody.innerHTML = '<tr><td colspan="6">Error cargando datos</td></tr>';
+				console.error(error);
+			}
+		}
+
+		function mostrarComidas(comidas) {
+			const tbody = document.querySelector('#tablaNutricional');
+			tbody.innerHTML = '';
+			if (comidas.length === 0) {
+				tbody.innerHTML = '<tr><td colspan="6">No se encontraron alimentos</td></tr>';
+				return;
+			}
+			comidas.forEach((c, index) => {
+				const tr = document.createElement('tr');
+				tr.innerHTML = `
+                    <td><input type="checkbox" class="alimento-checkbox" data-index="${index}"></td>
+                    <td>${c.nombre}</td>
+                    <td>${c.calorias}</td>
+                    <td>${c.proteinas}</td>
+                    <td>${c.grasas}</td>
+                    <td>${c.carbohidratos}</td>
+                `;
+				tbody.appendChild(tr);
+			});
+		}
+
+		document.addEventListener('DOMContentLoaded', () => {
+			cargarComidas();
+			const inputBuscar = document.querySelector('#buscarAlimento');
+			const botonCalcular = document.querySelector('#calcularTotales');
+			const botonGuardar = document.querySelector('#guardarRegistro');
+			const lista = document.querySelector('#listaAlimentos');
+			const resultadoTotales = document.querySelector('#resultadoTotales');
+
+			if (inputBuscar) {
+				inputBuscar.addEventListener('input', function () {
+					const texto = this.value.toLowerCase();
+					const filtradas = window.listaComidas.filter(c => c.nombre.toLowerCase().includes(texto));
+					mostrarComidas(filtradas);
+				});
+			}
+
+			if (botonCalcular) {
+				botonCalcular.addEventListener('click', () => {
+					const checkboxes = document.querySelectorAll('.alimento-checkbox:checked');
+					let totalCalorias = 0, totalProteinas = 0, totalGrasas = 0, totalCarbs = 0;
+					const seleccionados = [];
+					checkboxes.forEach(cb => {
+						const i = parseInt(cb.getAttribute('data-index'));
+						const alimento = window.listaComidas[i];
+						totalCalorias += alimento.calorias;
+						totalProteinas += alimento.proteinas;
+						totalGrasas += alimento.grasas;
+						totalCarbs += alimento.carbohidratos;
+						seleccionados.push(alimento.nombre);
+					});
+					lista.innerHTML = '';
+					seleccionados.forEach(nombre => {
+						const li = document.createElement('li');
+						li.className = 'list-group-item';
+						li.textContent = nombre;
+						lista.appendChild(li);
+					});
+					let mensaje = `<h4>Totales del día:</h4><ul><li><strong>Calorías:</strong> ${totalCalorias}</li><li><strong>Proteínas:</strong> ${totalProteinas.toFixed(2)} g</li><li><strong>Grasas:</strong> ${totalGrasas.toFixed(2)} g</li><li><strong>Carbohidratos:</strong> ${totalCarbs.toFixed(2)} g</li></ul>`;
+					mensaje += '<h5>Recomendación:</h5>';
+					if (totalCalorias < 1800) mensaje += '<p>Has consumido pocas calorías. Considera comer más si te sientes con poca energía.</p>';
+					else if (totalCalorias > 2500) mensaje += '<p>Has consumido muchas calorías. Controla tu ingesta si estás buscando mantener tu peso.</p>';
+					else mensaje += '<p>Tu ingesta calórica está dentro de un rango saludable.</p>';
+					if (totalProteinas < 50) mensaje += '<p>Añade más alimentos ricos en proteínas como pollo, huevos o legumbres.</p>';
+					if (totalCarbs > 300) mensaje += '<p>Reduce un poco los carbohidratos si estás buscando controlar el peso.</p>';
+					resultadoTotales.innerHTML = mensaje;
+					if (seleccionados.length > 0) {
+						botonGuardar.style.display = 'inline-block';
+						window.registroDelDia = {
+							fecha: new Date().toISOString(),
+							calorias: totalCalorias,
+							proteinas: totalProteinas,
+							grasas: totalGrasas,
+							carbohidratos: totalCarbs,
+							alimentos: seleccionados
+						};
+					} else {
+						botonGuardar.style.display = 'none';
+					}
+				});
+			}
+			if (botonGuardar) {
+				botonGuardar.addEventListener('click', () => {
+					if (!window.registroDelDia) return;
+					fetch("/api/registro/guardar", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify(window.registroDelDia)
+					})
+						.then(res => {
+							if (!res.ok) throw new Error('Error guardando registro');
+							return res.json();
+						})
+						.then(data => {
+							alert('Registro guardado correctamente');
+						})
+						.catch(err => {
+							console.error(err);
+							alert('Error guardando registro');
+						});
+				});
+			}
+		});
+	</script>
+
+	<script>
+		function toggleMenu() {
+			document.querySelector('.sidebar').classList.toggle('show');
+		}
+
+		function showNormalMenu() {
+			document.getElementById('normalMenu').style.display = 'block';
+			document.getElementById('preciseMenu').style.display = 'none';
+			document.getElementById('normalCalcBtn').classList.replace('btn-secondary', 'btn-primary');
+			document.getElementById('preciseCalcBtn').classList.replace('btn-primary', 'btn-secondary');
+			clearImcResult();
+		}
+
+		function showPreciseMenu() {
+			document.getElementById('preciseMenu').style.display = 'block';
+			document.getElementById('normalMenu').style.display = 'none';
+			document.getElementById('preciseCalcBtn').classList.replace('btn-secondary', 'btn-primary');
+			document.getElementById('normalCalcBtn').classList.replace('btn-primary', 'btn-secondary');
+			clearImcResult();
+		}
+
+		if (document.getElementById('normalCalcBtn')) {
+			document.getElementById('normalCalcBtn').addEventListener('click', showNormalMenu);
+			document.getElementById('preciseCalcBtn').addEventListener('click', showPreciseMenu);
+		}
+		showNormalMenu();
+
+		function clearImcResult() {
+			const resultDiv = document.getElementById('imcResult');
+			if (resultDiv) resultDiv.style.display = 'none';
+			const imcValue = document.getElementById('imcValue');
+			const imcCategory = document.getElementById('imcCategory');
+			const grasa = document.getElementById('grasaCorporal');
+			const riesgoCintura = document.getElementById('riesgoCintura');
+			const riesgoCadera = document.getElementById('riesgoCinturaCadera');
+			if (imcValue) imcValue.textContent = '';
+			if (imcCategory) imcCategory.textContent = '';
+			if (grasa) grasa.textContent = '';
+			if (riesgoCintura) riesgoCintura.textContent = '';
+			if (riesgoCadera) riesgoCadera.textContent = '';
+		}
+
+		function mostrarResultado(imc, cintura = null, cadera = null, edad = null, sexo = null) {
+			document.getElementById('imcValue').textContent = imc;
+			let categoria = '';
+			let grasaCorporal = 'N/A';
+			let riesgoCintura = 'N/A';
+			let riesgoCinturaCadera = 'N/A';
+			if (imc < 18.5) categoria = 'Bajo Peso';
+			else if (imc >= 18.5 && imc < 24.9) categoria = 'Peso Normal';
+			else if (imc >= 25 && imc < 29.9) categoria = 'Sobrepeso';
+			else categoria = 'Obesidad';
+			if (sexo && edad) {
+				grasaCorporal = sexo === 'hombre' ? (1.2 * imc + 0.23 * edad - 16.2).toFixed(2) : (1.2 * imc + 0.23 * edad - 5.4).toFixed(2);
+			}
+			if (cintura !== null && sexo) riesgoCintura = cintura > (sexo === 'hombre' ? 102 : 88) ? 'Alto' : 'Normal';
+			if (cintura !== null && cadera !== null && cadera !== 0) riesgoCinturaCadera = (cintura / cadera).toFixed(2);
+			document.getElementById('imcCategory').textContent = categoria;
+			document.getElementById('grasaCorporal').textContent = grasaCorporal;
+			document.getElementById('riesgoCintura').textContent = riesgoCintura;
+			document.getElementById('riesgoCinturaCadera').textContent = riesgoCinturaCadera;
+			document.getElementById('imcResult').style.display = 'block';
+		}
+
+		const normalForm = document.getElementById("normalImcForm");
+		if (normalForm) {
+			normalForm.addEventListener("submit", function (event) {
+				event.preventDefault();
+				const peso = parseFloat(document.getElementById("pesoNormal").value);
+				const alturaM = parseFloat(document.getElementById("alturaNormal").value) / 100;
+				if (!peso || !alturaM) { alert("Ingrese peso y altura válidos"); return; }
+				const imc = (peso / (alturaM * alturaM)).toFixed(2);
+				mostrarResultado(imc);
+			});
+		}
+		const preciseForm = document.getElementById("preciseImcForm");
+		if (preciseForm) {
+			preciseForm.addEventListener("submit", function (event) {
+				event.preventDefault();
+				const peso = parseFloat(document.getElementById("peso").value);
+				const alturaM = parseFloat(document.getElementById("altura").value) / 100;
+				const edad = parseInt(document.getElementById("edad").value);
+				const sexo = document.getElementById("sexo").value;
+				const cintura = parseFloat(document.getElementById("cintura").value);
+				const cadera = parseFloat(document.getElementById("cadera").value);
+				if (!peso || !alturaM || !edad || !sexo) { alert("Complete todos los campos"); return; }
+				const imc = (peso / (alturaM * alturaM)).toFixed(2);
+				mostrarResultado(imc, cintura, cadera, edad, sexo);
+			});
+		}
+
+		function guardarIMC() {
+			const imc = document.getElementById("imcValue").textContent;
+			const categoria = document.getElementById("imcCategory").textContent;
+			if (!imc || !categoria) { alert("Primero calcula tu IMC antes de guardarlo."); return; }
+			document.getElementById("hiddenImc").value = imc;
+			document.getElementById("hiddenCategoria").value = categoria;
+			document.getElementById("guardarImcForm").submit();
+		}
+		const saveNormal = document.getElementById("saveNormalImcButton");
+		const savePrecise = document.getElementById("saveImcButton");
+		if (saveNormal) saveNormal.addEventListener("click", guardarIMC);
+		if (savePrecise) savePrecise.addEventListener("click", guardarIMC);
+	</script>
+
+	<script th:inline="javascript">
+		const historial = /*[[${historialImc}]]*/[];
+		function cargarHistorial() {
+			const tbody = document.querySelector('#historialImcTable tbody');
+			if (tbody) {
+				tbody.innerHTML = '';
+				historial.forEach(registro => {
+					const fecha = new Date(registro.fechaRegistro).toLocaleString('es-ES');
+					const tr = document.createElement('tr');
+					tr.innerHTML = `<td>${fecha}</td><td>${registro.imc}</td><td>${registro.categoria}</td>`;
+					tbody.appendChild(tr);
+				});
+			}
+		}
+		cargarHistorial();
+	</script>
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+		function usarSugerencia(texto) {
+			const input = document.getElementById('mensaje');
+			if (input) {
+				input.value = texto;
+				input.focus();
+			}
+		}
+
+		async function enviarMensaje() {
+			const input = document.getElementById("mensaje");
+			const mensaje = input.value.trim();
+			if (!mensaje) return;
+
+			const chatBox = document.getElementById("chatBox");
+			const modelo = document.getElementById("modeloSelector").value;
+
+			if (chatBox.querySelector('div[style*="text-align: center"]')) {
+				chatBox.innerHTML = '';
+			}
+
+			chatBox.innerHTML += `
+                <div style="text-align: right; margin-bottom: 12px;">
+                    <span style="background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 10px 16px; border-radius: 18px 18px 4px 18px; display: inline-block; max-width: 75%; text-align: left; font-size: 0.92rem; box-shadow: 0 2px 8px rgba(0,123,255,0.2);">
+                        ${mensaje}
+                    </span>
+                    <br><small style="color: #adb5bd; font-size: 0.72rem; margin-top: 3px; display: inline-block;">Tú</small>
+                </div>`;
+			input.value = '';
+			chatBox.scrollTop = chatBox.scrollHeight;
+
+			const loadingId = 'typing-' + Date.now();
+			chatBox.innerHTML += `
+                <div id="${loadingId}" style="text-align: left; margin-bottom: 12px;">
+                    <span style="background: #e9ecef; padding: 10px 16px; border-radius: 18px 18px 18px 4px; display: inline-block; color: #6c757d; font-size: 0.92rem;">
+                        <span style="display: inline-flex; gap: 4px; align-items: center;">
+                            <span style="width: 6px; height: 6px; background: #007bff; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; animation-delay: 0s;"></span>
+                            <span style="width: 6px; height: 6px; background: #007bff; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; animation-delay: 0.2s;"></span>
+                            <span style="width: 6px; height: 6px; background: #007bff; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; animation-delay: 0.4s;"></span>
+                        </span>
+                    </span>
+                </div>`;
+			chatBox.scrollTop = chatBox.scrollHeight;
+
+			try {
+				const res = await fetch("/chat/" + modelo, {
+					method: "POST",
+					headers: { "Content-Type": "text/plain" },
+					body: mensaje
+				});
+				const data = await res.text();
+				const loading = document.getElementById(loadingId);
+				if (loading) loading.remove();
+				const respuestaFormateada = data.replace(/\n/g, '<br>');
+				chatBox.innerHTML += `
+                    <div style="text-align: left; margin-bottom: 12px;">
+                        <span style="background: #e9ecef; padding: 12px 16px; border-radius: 18px 18px 18px 4px; display: inline-block; max-width: 80%; text-align: left; font-size: 0.92rem; line-height: 1.5; box-shadow: 0 2px 6px rgba(0,0,0,0.06);">
+                            ${respuestaFormateada}
+                        </span>
+                        <br><small style="color: #adb5bd; font-size: 0.72rem; margin-top: 3px; display: inline-block;"><i class="bi bi-robot"></i> Asistente IA (${modelo === 'openai' ? 'OpenAI' : 'Ollama'})</small>
+                    </div>`;
+			} catch (error) {
+				const loading = document.getElementById(loadingId);
+				if (loading) loading.remove();
+				chatBox.innerHTML += `
+                    <div style="text-align: left; margin-bottom: 12px;">
+                        <span style="background: #f8d7da; color: #721c24; padding: 10px 16px; border-radius: 18px 18px 18px 4px; display: inline-block; font-size: 0.92rem;">
+                            Error al comunicarse con el servidor. Verifica que el servicio de IA esté activo.
+                        </span>
+                    </div>`;
+			}
+			chatBox.scrollTop = chatBox.scrollHeight;
+		}
+	</script>
+	<style>
+		@keyframes bounce {
+
+			0%,
+			80%,
+			100% {
+				transform: scale(0);
+			}
+
+			40% {
+				transform: scale(1);
+			}
+		}
+	</style>
+</body>
+
+</html>

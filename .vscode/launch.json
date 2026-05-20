@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-RegistroUsuariosSpringSecurityApplication<com.registro.usuarios>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.registro.usuarios.RegistroUsuariosSpringSecurityApplication",
+            "projectName": "com.registro.usuarios",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
