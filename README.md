@@ -25,6 +25,6 @@
 
 ## Instalación
 1. Clonar el repositorio
-2. Crear la base de datos con el script `biblioteca.sql`
+2. Crear la base de datos con el script `base de datos PA.sql`
 3. Configurar credenciales en `en application.properties`
 4. Ejecutar el proyecto
