@@ -8,11 +8,19 @@
     "alta": 120,
     "media": 120
   },
-  "modelo_seleccionado": "Random Forest",
+  "modelo_seleccionado": "Red Neuronal MLP",
+  "mejor_modelo_segun_f1": "Random Forest",
+  "tipo_modelo": "Red Neuronal Artificial MLP",
+  "arquitectura": [
+    32,
+    16
+  ],
+  "iteraciones_maximas": 500,
+  "iteraciones_realizadas": 203,
   "evaluacion": {
     "Random Forest": {
-      "f1_macro": 0.9719,
       "accuracy": 0.9722,
+      "f1_macro": 0.9719,
       "matriz_confusion": [
         [
           24,
@@ -65,8 +73,8 @@
       }
     },
     "Regresion Logistica": {
-      "f1_macro": 0.8995,
       "accuracy": 0.9028,
+      "f1_macro": 0.8995,
       "matriz_confusion": [
         [
           24,
@@ -117,6 +125,67 @@
           "support": 72.0
         }
       }
+    },
+    "Red Neuronal MLP": {
+      "accuracy": 0.8889,
+      "f1_macro": 0.8864,
+      "matriz_confusion": [
+        [
+          23,
+          0,
+          1
+        ],
+        [
+          1,
+          23,
+          0
+        ],
+        [
+          3,
+          3,
+          18
+        ]
+      ],
+      "reporte": {
+        "alta": {
+          "precision": 0.8518518518518519,
+          "recall": 0.9583333333333334,
+          "f1-score": 0.9019607843137255,
+          "support": 24.0
+        },
+        "baja": {
+          "precision": 0.8846153846153846,
+          "recall": 0.9583333333333334,
+          "f1-score": 0.92,
+          "support": 24.0
+        },
+        "media": {
+          "precision": 0.9473684210526315,
+          "recall": 0.75,
+          "f1-score": 0.8372093023255814,
+          "support": 24.0
+        },
+        "accuracy": 0.8888888888888888,
+        "macro avg": {
+          "precision": 0.894611885839956,
+          "recall": 0.888888888888889,
+          "f1-score": 0.8863900288797689,
+          "support": 72.0
+        },
+        "weighted avg": {
+          "precision": 0.894611885839956,
+          "recall": 0.8888888888888888,
+          "f1-score": 0.886390028879769,
+          "support": 72.0
+        }
+      },
+      "iteraciones": 203,
+      "max_iteraciones": 500,
+      "arquitectura": [
+        32,
+        16
+      ],
+      "perdida_final": 0.06946192113312927
     }
   }
 }
