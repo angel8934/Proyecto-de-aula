@@ -723,6 +723,171 @@
                 font-size: 0.85rem;
             }
         }
+
+        /* =================================
+   ADAPTACIÓN MÓVIL NUTRI VIDA
+   ================================= */
+
+        .menu-toggle {
+            display: none;
+            background: transparent;
+            color: white;
+            border: 0;
+            font-size: 30px;
+            cursor: pointer;
+            padding: 6px 12px;
+        }
+
+        @media (max-width: 768px) {
+
+            body {
+                padding-top: 105px;
+                overflow-x: hidden;
+            }
+
+            .container {
+                width: 100%;
+                padding: 12px 16px;
+            }
+
+            header {
+                padding: 5px 0;
+            }
+
+            .header-content {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .brand-container {
+                flex-direction: row;
+                text-align: left;
+                justify-content: flex-start;
+                width: auto;
+                flex: 1;
+                gap: 10px;
+                min-width: 0;
+            }
+
+            .brand-text {
+                align-items: flex-start;
+            }
+
+            .logo-container,
+            header.scrolled .logo-container {
+                width: 48px;
+                height: 48px;
+                flex-shrink: 0;
+                border-width: 2px;
+            }
+
+            .logo,
+            header.scrolled .logo {
+                font-size: 1.3rem;
+            }
+
+            .tagline,
+            header.scrolled .tagline {
+                font-size: 0.68rem;
+            }
+
+            .menu-toggle {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            #mainNav {
+                display: none;
+                width: 100%;
+                flex: 0 0 100%;
+                padding: 10px 0;
+            }
+
+            #mainNav.open {
+                display: flex;
+            }
+
+            #mainNav ul {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                gap: 4px;
+                padding: 0;
+            }
+
+            #mainNav li {
+                width: 100%;
+            }
+
+            #mainNav a {
+                display: block;
+                width: 100%;
+                text-align: left;
+                padding: 12px 14px;
+            }
+
+            section {
+                padding: 35px 0;
+                scroll-margin-top: 105px;
+            }
+
+            .hero {
+                padding: 55px 0;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            h2 {
+                font-size: 1.6rem;
+            }
+
+            .imc-section {
+                padding: 22px 16px;
+                width: 100%;
+            }
+
+            .form-control {
+                font-size: 16px;
+                width: 100%;
+            }
+
+            .caracteristicas-grid,
+            .equipo-grid {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .metodologia-steps {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .dashboard-container {
+                padding-bottom: 78%;
+                border-radius: 10px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 18px;
+            }
+
+            .btn {
+                max-width: 100%;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 
@@ -739,7 +904,14 @@
                     <div class="tagline">Pequeños cambios, Grandes resultados</div>
                 </div>
             </div>
-            <nav>
+
+            <!-- Botón del menú para celulares -->
+            <button type="button" class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false"
+                aria-controls="mainNav">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <nav id="mainNav">
                 <ul>
                     <li><a href="#inicio" class="nav-link active">Inicio</a></li>
                     <li><a href="#problema" class="nav-link">El Problema</a></li>
@@ -932,7 +1104,7 @@
             <h2>Accede a Nuestra Aplicación Completa</h2>
             <p>Utiliza nuestra aplicación completa para calcular tu IMC de forma avanzada, agendar citas con
                 profesionales de la salud y obtener recomendaciones personalizadas.</p>
-            <a href="usuario (2).html" class="btn">Ir a la Aplicación Completa</a>
+            <a href="/login" class="btn">Ir a la Aplicación Completa</a>
         </div>
     </section>
 
@@ -1092,6 +1264,47 @@
             }, 100);
         });
     </script>
+    
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const menuToggle = document.getElementById("menuToggle");
+    const mainNav = document.getElementById("mainNav");
+
+    if (!menuToggle || !mainNav) {
+        return;
+    }
+
+    // Abrir y cerrar menú móvil
+    menuToggle.addEventListener("click", function () {
+        const abierto = mainNav.classList.toggle("open");
+
+        menuToggle.setAttribute(
+            "aria-expanded",
+            String(abierto)
+        );
+
+        menuToggle.innerHTML = abierto
+            ? '<i class="bi bi-x-lg"></i>'
+            : '<i class="bi bi-list"></i>';
+    });
+
+    // Cerrar menú al seleccionar una sección
+    mainNav.querySelectorAll("a").forEach(function (enlace) {
+        enlace.addEventListener("click", function () {
+
+            mainNav.classList.remove("open");
+
+            menuToggle.setAttribute("aria-expanded", "false");
+
+            menuToggle.innerHTML =
+                '<i class="bi bi-list"></i>';
+        });
+    });
+
+});
+</script>
+
 </body>
 
 </html>

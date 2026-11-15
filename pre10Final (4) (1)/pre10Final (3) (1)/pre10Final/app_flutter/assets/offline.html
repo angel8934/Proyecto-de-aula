@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Nutri Vida - Sin conexión</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 24px;
+            background: #f4f8fc;
+            color: #263238;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 4px 16px #00000012;
+        }
+
+        h1 {
+            color: #007bff;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 13px;
+            box-sizing: border-box;
+            margin: 8px 0;
+            border-radius: 9px;
+            font-size: 16px;
+        }
+
+        input {
+            border: 1px solid #bfc8d0;
+        }
+
+        button {
+            background: #007bff;
+            border: none;
+            color: white;
+        }
+
+        #resultado {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+
+        <h1>NUTRI VIDA</h1>
+
+        <h3>Modo sin conexión</h3>
+
+        <p>
+            El servidor no está disponible.
+            Puedes utilizar la calculadora básica de IMC.
+        </p>
+
+        <h3>Calculadora de IMC</h3>
+
+        <label for="peso">Peso (kg)</label>
+        <input id="peso" type="number" min="1" step="any">
+
+        <label for="altura">Altura (cm)</label>
+        <input id="altura" type="number" min="1" step="any">
+
+        <button onclick="calcularIMC()">
+            Calcular IMC
+        </button>
+
+        <div id="resultado"></div>
+
+        <p>
+            Cuando recuperes la conexión, utiliza
+            el botón de recargar de la aplicación.
+        </p>
+
+    </div>
+
+    <script>
+        function calcularIMC() {
+            const peso = Number(
+                document.getElementById("peso").value
+            );
+
+            const alturaCm = Number(
+                document.getElementById("altura").value
+            );
+
+            const salida = document.getElementById(
+                "resultado"
+            );
+
+            if (
+                !Number.isFinite(peso) ||
+                !Number.isFinite(alturaCm) ||
+                peso <= 0 ||
+                alturaCm <= 0
+            ) {
+                salida.textContent =
+                    "Ingresa valores válidos.";
+                return;
+            }
+
+            const alturaM = alturaCm / 100;
+            const imc = peso / (alturaM * alturaM);
+
+            salida.textContent =
+                "Tu IMC es: " + imc.toFixed(2);
+        }
+    </script>
+</body>
+</html>

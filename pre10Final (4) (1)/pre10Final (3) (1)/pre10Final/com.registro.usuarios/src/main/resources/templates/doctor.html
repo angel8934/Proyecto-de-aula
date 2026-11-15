@@ -2,6 +2,12 @@
 <html lang="es">
 
 <head>
+
+    <!-- Token CSRF, si está disponible en Spring Security -->
+    <meta th:if="${_csrf != null}" name="_csrf" th:content="${_csrf.token}">
+
+    <meta th:if="${_csrf != null}" name="_csrf_header" th:content="${_csrf.headerName}">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Personal - Doctor</title>
@@ -855,6 +861,21 @@
                             <ul id="recommendations" class="list-group"></ul>
                         </div>
 
+                        <!-- RADAR DE ADHERENCIA -->
+                        <div class="mt-4">
+                            <h5 class="text-center">
+                                Perfil de Adherencia Nutricional
+                            </h5>
+
+                            <p class="text-muted text-center">
+                                Visualización de los factores del paciente.
+                            </p>
+
+                            <div id="radarAdherencia" style="width:100%; min-height:360px;">
+                            </div>
+                        </div>
+
+
 
                     </div>
                 </div>
@@ -1310,49 +1331,170 @@
         }
 
         // ✅ NUEVA FUNCIÓN: Conectada al modelo WEKA real (backend)
+
         async function calculatePrediction() {
-            // Validar formulario primero
-            if (!validatePredictionForm()) {
+
+            const valor = (id) =>
+                document.getElementById(id)?.value ?? "";
+
+            const genero = document.querySelector(
+                'input[name="gender"]:checked'
+            )?.value;
+
+            const datos = {
+                age: Number(valor("age")),
+                gender: genero,
+                motivation: valor("motivation"),
+                previousDiets: Number(valor("previousDiets")),
+                supportSystem: valor("supportSystem"),
+                activityLevel: valor("activityLevel"),
+                stressLevel: valor("stressLevel"),
+                dietComplexity: valor("dietComplexity"),
+                foodPreferences: valor("foodPreferences")
+            };
+
+            if (
+                !genero ||
+                !valor("age") ||
+                !valor("previousDiets") ||
+                !datos.motivation ||
+                !datos.supportSystem ||
+                !datos.activityLevel ||
+                !datos.stressLevel ||
+                !datos.dietComplexity ||
+                !datos.foodPreferences
+            ) {
+                alert("Completa todos los campos.");
                 return;
             }
 
-            // Obtener datos del formulario
-            const data = getFormData();
+            const csrf = document.querySelector(
+                'meta[name="_csrf"]'
+            )?.content;
+
+            const csrfHeader = document.querySelector(
+                'meta[name="_csrf_header"]'
+            )?.content;
+
+            const headers = {
+                "Content-Type": "application/json"
+            };
+
+            if (csrf && csrfHeader) {
+                headers[csrfHeader] = csrf;
+            }
 
             try {
-                // Mostrar indicador de carga
-                showLoadingIndicator(true);
+                const respuesta = await fetch(
+                    "/api/prediccion/calcular",
+                    {
+                        method: "POST",
+                        headers,
+                        credentials: "same-origin",
+                        body: JSON.stringify(datos)
+                    }
+                );
 
-                const response = await fetch('/api/prediccion/calcular', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
+                if (!respuesta.ok) {
+                    throw new Error(
+                        "No se pudo consultar la predicción. " +
+                        "Código HTTP: " + respuesta.status
+                    );
+                }
+
+                const resultado = await respuesta.json();
+
+                if (resultado.error) {
+                    throw new Error(resultado.error);
+                }
+
+                const porcentaje = Number(resultado.porcentaje);
+                const nivel = String(resultado.nivel);
+
+                document.getElementById(
+                    "resultPercentage"
+                ).textContent = porcentaje.toFixed(1) + "%";
+
+                document.getElementById(
+                    "resultProgress"
+                ).style.width = porcentaje + "%";
+
+                document.getElementById(
+                    "resultDescription"
+                ).textContent = resultado.descripcion;
+
+                document.getElementById(
+                    "resultLevel"
+                ).textContent = "Adherencia " + nivel;
+
+                document.getElementById(
+                    "resultIcon"
+                ).textContent = "📊";
+
+                const factores = document.getElementById("keyFactors");
+                if (factores) {
+                    factores.textContent =
+                        "El radar muestra el perfil descriptivo del paciente.";
+                }
+
+                const recomendaciones =
+                    document.getElementById("recommendations");
+
+                if (recomendaciones) {
+                    recomendaciones.replaceChildren();
+                }
+
+                const contenedor = document.getElementById(
+                    "predictionResult"
+                );
+
+                contenedor.style.display = "block";
+
+                // Mostrar el radar que preparó Python.
+                const radar = resultado.radar;
+
+                await Plotly.react(
+                    "radarAdherencia",
+                    [{
+                        type: "scatterpolar",
+                        r: radar.valores,
+                        theta: radar.categorias,
+                        fill: "toself",
+                        name: "Paciente"
+                    }],
+                    {
+                        polar: {
+                            radialaxis: {
+                                visible: true,
+                                range: [0, 100]
+                            }
+                        },
+                        showlegend: false,
+                        margin: {
+                            l: 65, r: 65,
+                            t: 30, b: 35
+                        }
                     },
-                    body: JSON.stringify(data)
+                    {
+                        responsive: true,
+                        displayModeBar: false
+                    }
+                );
+
+                contenedor.scrollIntoView({
+                    behavior: "smooth"
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Error del servidor: ${response.status}`);
-                }
-
-                const result = await response.json();
-
-                if (result.error) {
-                    throw new Error(result.error);
-                }
-
-                // Mostrar resultados
-                displayWekaPredictionResult(result);
-
             } catch (error) {
-                console.error('❌ Error:', error);
-                showAlert('Error al conectarse con el servidor: ' + error.message);
-            } finally {
-                // Ocultar indicador de carga
-                showLoadingIndicator(false);
+                console.error(error);
+
+                alert(
+                    "No fue posible calcular la predicción. " +
+                    "Comprueba la conexión con el servidor."
+                );
             }
         }
+
 
         // Función para validar el formulario de predicción
         function validatePredictionForm() {
@@ -1776,6 +1918,7 @@
             chatBox.scrollTop = chatBox.scrollHeight;
         }
     </script>
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 </body>
 
 </html>

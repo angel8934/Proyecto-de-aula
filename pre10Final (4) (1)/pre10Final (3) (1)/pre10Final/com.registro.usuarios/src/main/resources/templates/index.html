@@ -12,6 +12,7 @@
 	<link rel="stylesheet"
 		href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
 	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
 	<style>
 		/* Ajustes generales */
 		body {
@@ -339,8 +340,7 @@
 				padding: 10px 5px;
 			}
 
-			.sidebar header,
-			.sidebar .logout {
+			.sidebar header {
 				display: none;
 			}
 
@@ -459,6 +459,48 @@
 			margin-right: 10px;
 			font-size: 1.1rem;
 		}
+
+
+		/* CERRAR SESIÓN VISIBLE EN CELULARES */
+
+		.logout-movil {
+			display: none;
+		}
+
+		@media (max-width: 768px) {
+
+			.sidebar .logout {
+				display: none;
+			}
+
+			.logout-movil {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 10px;
+
+				position: fixed;
+				bottom: calc(12px + env(safe-area-inset-bottom));
+				left: 15px;
+				right: 15px;
+
+				padding: 14px;
+				border: none;
+				border-radius: 12px;
+
+				background-color: #dc3545;
+				color: white;
+				font-size: 16px;
+				font-weight: 600;
+
+				z-index: 1200;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+			}
+
+			.content {
+				padding-bottom: 110px;
+			}
+		}
 	</style>
 </head>
 
@@ -505,6 +547,15 @@
 			</ul>
 		</div>
 	</div>
+
+	<!-- Botón visible solo en celulares -->
+	<button type="button" class="logout-movil" sec:authorize="isAuthenticated()" onclick="confirmLogout(event)">
+
+		<i class="bi bi-box-arrow-right"></i>
+		Cerrar sesión
+
+	</button>
+
 
 	<!-- Modal de confirmación de cierre de sesión -->
 	<div id="logoutModal" class="modal-confirm">
@@ -770,6 +821,30 @@
 
 					<!-- Contenedor para mostrar resultados -->
 					<div id="resultadoTotales" class="mt-3"></div>
+
+					<!-- RADAR NUTRICIONAL -->
+					<div id="seccionRadarNutricional" class="card mt-4 shadow-sm" style="display: none;">
+						<div class="card-body">
+
+							<h4 class="text-center">
+								Distribución Nutricional del Día
+							</h4>
+
+							<p class="text-muted text-center">
+								Porcentaje aproximado de energía aportado
+								por cada macronutriente.
+							</p>
+
+							<div id="radarNutricional" style="width: 100%; min-height: 360px;"></div>
+
+							<p class="text-muted text-center small">
+								Este gráfico describe el consumo registrado.
+								No representa el cumplimiento de una meta.
+							</p>
+
+						</div>
+					</div>
+
 					<!-- Botón para guardar -->
 					<button id="guardarRegistro" class="btn btn-success mt-3" style="display: none;">Guardar registro
 						del día</button>
@@ -884,6 +959,8 @@
 		</div>
 	</div>
 
+	<script src="/js/plotly-2.35.2.min.js"></script>
+
 	<script>
 		// Funciones para el modal de cierre de sesión
 		function confirmLogout(event) {
@@ -949,6 +1026,121 @@
 			});
 		}
 
+
+		function mostrarRadarNutricional(
+			totalCalorias,
+			totalProteinas,
+			totalGrasas,
+			totalCarbs
+		) {
+
+			const seccion = document.getElementById(
+				"seccionRadarNutricional"
+			);
+
+			const contenedor = document.getElementById(
+				"radarNutricional"
+			);
+
+			if (!seccion || !contenedor) {
+				console.error("No se encontró el contenedor del radar.");
+				return;
+			}
+
+			// Conversión aproximada a energía
+			const energiaProteinas = totalProteinas * 4;
+			const energiaGrasas = totalGrasas * 9;
+			const energiaCarbs = totalCarbs * 4;
+
+			const energiaTotal =
+				energiaProteinas +
+				energiaGrasas +
+				energiaCarbs;
+
+			// No dibujar si no hay macronutrientes válidos
+			if (!Number.isFinite(energiaTotal) || energiaTotal <= 0) {
+				seccion.style.display = "none";
+				return;
+			}
+
+			const porcentajeProteinas =
+				energiaProteinas / energiaTotal * 100;
+
+			const porcentajeGrasas =
+				energiaGrasas / energiaTotal * 100;
+
+			const porcentajeCarbs =
+				energiaCarbs / energiaTotal * 100;
+
+			const categorias = [
+				"Proteínas",
+				"Grasas",
+				"Carbohidratos"
+			];
+
+			const valores = [
+				porcentajeProteinas,
+				porcentajeGrasas,
+				porcentajeCarbs
+			];
+
+			if (typeof Plotly === "undefined") {
+				console.error("No se cargó la librería Plotly.");
+				return;
+			}
+
+			seccion.style.display = "block";
+
+			const grafico = [{
+				type: "scatterpolar",
+				r: valores,
+				theta: categorias,
+				fill: "toself",
+				mode: "lines+markers",
+				name: "Consumo del día",
+				line: {
+					color: "#007bff",
+					width: 3
+				},
+				marker: {
+					color: "#0056b3",
+					size: 8
+				},
+				fillcolor: "rgba(0, 123, 255, 0.25)",
+				hovertemplate:
+					"%{theta}: %{r:.1f}%<extra></extra>"
+			}];
+
+			const diseño = {
+				polar: {
+					radialaxis: {
+						visible: true,
+						range: [0, 100],
+						ticksuffix: "%"
+					}
+				},
+				showlegend: false,
+				margin: {
+					l: 70,
+					r: 70,
+					t: 45,
+					b: 45
+				},
+				paper_bgcolor: "rgba(0,0,0,0)"
+			};
+
+			Plotly.react(
+				contenedor,
+				grafico,
+				diseño,
+				{
+					responsive: true,
+					displayModeBar: false
+				}
+			);
+		}
+
+
 		document.addEventListener('DOMContentLoaded', () => {
 			cargarComidas();
 			const inputBuscar = document.querySelector('#buscarAlimento');
@@ -994,6 +1186,14 @@
 					if (totalProteinas < 50) mensaje += '<p>Añade más alimentos ricos en proteínas como pollo, huevos o legumbres.</p>';
 					if (totalCarbs > 300) mensaje += '<p>Reduce un poco los carbohidratos si estás buscando controlar el peso.</p>';
 					resultadoTotales.innerHTML = mensaje;
+
+					mostrarRadarNutricional(
+						totalCalorias,
+						totalProteinas,
+						totalGrasas,
+						totalCarbs
+					);
+
 					if (seleccionados.length > 0) {
 						botonGuardar.style.display = 'inline-block';
 						window.registroDelDia = {
@@ -1006,6 +1206,7 @@
 						};
 					} else {
 						botonGuardar.style.display = 'none';
+						window.registroDelDia = null;
 					}
 				});
 			}

@@ -496,23 +496,81 @@
             const form = $('form');
             const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
 
+
             $('#submitBtn').on('click', function (e) {
                 e.preventDefault();
 
-                const email = $('#email').val();
-                if (!email.endsWith('@gmail.com')) {
-                    alert('El correo electrónico debe ser de dominio @gmail.com');
+                // 1. Verificar los campos principales del registro
+                const camposPrincipales = [
+                    'nombre',
+                    'apellido',
+                    'edad',
+                    'celular',
+                    'email'
+                ];
+
+                // Incluir también otros campos marcados como required
+                const camposObligatorios = [
+                    ...new Set([
+                        ...camposPrincipales
+                            .map(id => document.getElementById(id))
+                            .filter(Boolean),
+                        ...form.find('[required]').toArray()
+                    ])
+                ];
+
+                const campoVacio = camposObligatorios.find(campo => {
+                    if (campo.disabled) return false;
+
+                    if (campo.type === 'checkbox') {
+                        return !campo.checked;
+                    }
+
+                    if (campo.type === 'radio') {
+                        return !form.find(
+                            'input[type="radio"]'
+                        ).toArray().some(otro =>
+                            otro.name === campo.name && otro.checked
+                        );
+                    }
+
+                    return !String(campo.value || '').trim();
+                });
+
+                if (campoVacio) {
+                    alert('Por favor, completa todos los campos obligatorios.');
+                    campoVacio.focus();
                     return;
                 }
 
+                // 2. Verificar que el correo sea Gmail
+                const email = String($('#email').val() || '').trim();
+
+                const correoGmail = /^[^\s@]+@gmail\.com$/i;
+
+                if (!correoGmail.test(email)) {
+                    alert('El correo electrónico debe ser de dominio @gmail.com');
+                    $('#email').focus();
+                    return;
+                }
+
+                // 3. Verificar otras restricciones del formulario
+                if (form.length && !form[0].checkValidity()) {
+                    form[0].reportValidity();
+                    return;
+                }
+
+                // 4. Mostrar información de confirmación
                 $('#previewNombre').text($('#nombre').val());
                 $('#previewApellido').text($('#apellido').val());
                 $('#previewEdad').text($('#edad').val());
                 $('#previewCelular').text($('#celular').val());
-                $('#previewEmail').text($('#email').val());
+                $('#previewEmail').text(email);
 
+                // 5. Abrir modal
                 modal.show();
             });
+
 
             $('#confirmSubmit').on('click', function () {
                 $('#btnText').addClass('d-none');
