@@ -703,15 +703,21 @@
                                 <div class="form-section">
                                     <h4 class="form-section-title">Información del Paciente</h4>
 
+
                                     <div class="mb-3">
-                                        <label for="patientSelect" class="form-label">Seleccionar Paciente</label>
-                                        <select class="form-select" id="patientSelect">
-                                            <option value="">-- Seleccione un paciente --</option>
-                                            <option value="1">Juan Pérez (ID: 001)</option>
-                                            <option value="2">María García (ID: 002)</option>
-                                            <option value="3">Carlos López (ID: 003)</option>
+                                        <label for="patientSelect" class="form-label">
+                                            Seleccionar Paciente
+                                        </label>
+
+                                        <select class="form-select" id="patientSelect" disabled>
+                                            <option value="">Cargando pacientes de MySQL...</option>
                                         </select>
+
+                                        <small id="estadoPacientesSelect" class="form-text text-muted">
+                                            Consultando pacientes registrados...
+                                        </small>
                                     </div>
+
 
                                     <div class="mb-3">
                                         <label for="age" class="form-label">Edad</label>
@@ -1919,6 +1925,140 @@
         }
     </script>
     <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+<script>
+async function cargarPacientesEnPrediccion() {
+    const select = document.getElementById("patientSelect");
+    const estado = document.getElementById("estadoPacientesSelect");
+
+    if (!select) return;
+
+    select.disabled = true;
+    select.replaceChildren(
+        new Option("Cargando pacientes...", "")
+    );
+
+    try {
+        const pacientes = new Map();
+
+        // Cargar varias paginas porque la API utiliza paginacion.
+        // Limite preventivo para no cargar miles de opciones.
+        for (let pagina = 0; pagina < 30; pagina++) {
+            const respuesta = await fetch(
+                `/api/usuarios/rol/1?page=${pagina}&size=100`,
+                { credentials: "same-origin", cache: "no-store" }
+            );
+
+            if (!respuesta.ok) {
+                throw new Error(
+                    "Error HTTP " + respuesta.status
+                );
+            }
+
+            const datos = await respuesta.json();
+
+            // Compatible con listas y respuestas paginadas comunes.
+            const lista = [
+                datos.content,
+                datos.usuarios,
+                datos.data?.content,
+                datos.data,
+                datos
+            ].find(Array.isArray);
+
+            if (!lista) {
+                throw new Error(
+                    "Formato de respuesta no reconocido"
+                );
+            }
+
+            const cantidadAnterior = pacientes.size;
+
+            for (const usuario of lista) {
+                const id =
+                    usuario.id ??
+                    usuario.usuario_id ??
+                    usuario.usuarioId;
+
+                const nombre = String(
+                    usuario.nombre ?? ""
+                ).trim();
+
+                const apellido = String(
+                    usuario.apellido ?? ""
+                ).trim();
+
+                if (id == null) continue;
+
+                pacientes.set(
+                    String(id),
+                    `${nombre} ${apellido}`.trim()
+                );
+
+                if (pacientes.size >= 500) break;
+            }
+
+            if (
+                lista.length === 0 ||
+                pacientes.size === cantidadAnterior ||
+                pacientes.size >= 500 ||
+                datos.last === true ||
+                (
+                    typeof datos.totalPages === "number" &&
+                    pagina + 1 >= datos.totalPages
+                )
+            ) {
+                break;
+            }
+        }
+
+        select.replaceChildren(
+            new Option("-- Seleccione un paciente --", "")
+        );
+
+        const ordenados = [...pacientes.entries()]
+            .sort((a, b) =>
+                a[1].localeCompare(b[1], "es")
+            );
+
+        for (const [id, nombre] of ordenados) {
+            select.add(
+                new Option(`${nombre} (ID: ${id})`, id)
+            );
+        }
+
+        select.disabled = ordenados.length === 0;
+
+        estado.textContent =
+            `Se cargaron ${ordenados.length} pacientes ` +
+            "desde MySQL.";
+
+        if (ordenados.length === 0) {
+            estado.textContent =
+                "No se encontraron pacientes registrados.";
+        }
+
+    } catch (error) {
+        console.error(
+            "Error al cargar pacientes para prediccion:",
+            error
+        );
+
+        select.replaceChildren(
+            new Option("Error al cargar pacientes", "")
+        );
+
+        estado.textContent =
+            "No se pudo consultar la lista de pacientes.";
+    }
+}
+
+document.addEventListener(
+    "DOMContentLoaded",
+    cargarPacientesEnPrediccion
+);
+</script>
+
 </body>
 
 </html>
