@@ -1,74 +1,70 @@
 
 import json
 import unicodedata
-import warnings
 from pathlib import Path
 
 import joblib
 import numpy as np
 import pandas as pd
-from scipy.io import arff
 
+from scipy.io import arff
 from sklearn.compose import ColumnTransformer
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.exceptions import ConvergenceWarning
 from sklearn.impute import SimpleImputer
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import (
-    accuracy_score,
-    f1_score,
-    classification_report,
-    confusion_matrix
+from sklearn.model_selection import (
+    StratifiedGroupKFold,
+    cross_validate
 )
-from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.preprocessing import (
+    OneHotEncoder,
+    StandardScaler,
+    LabelEncoder
+)
 
-
-# ==========================================
-# NUTRI VIDA - CONFIGURACION
-# ==========================================
 
 BASE = Path(__file__).resolve().parent
 
-ARCHIVO = BASE / "datos" / "plan_nutricional_360_balanceado.arff"
-MODELO = BASE / "modelos" / "modelo_adherencia.joblib"
-REPORTE = BASE / "modelos" / "evaluacion.json"
+ARFF = (
+    BASE / "datos"
+    / "plan_nutricional_360_sintetico_v2.arff"
+)
 
+MODELO = (
+    BASE / "modelos"
+    / "modelo_adherencia.joblib"
+)
+
+REPORTE = (
+    BASE / "modelos"
+    / "evaluacion.json"
+)
+
+# Las seis variables definitivas
 COLUMNAS = [
-    "edad",
-    "genero",
     "motivacion_inicial",
     "intentos_previos",
     "sistema_apoyo",
-    "actividad_fisica",
     "complejidad_plan",
     "estres",
     "afinidad_plan"
 ]
 
-NUMERICAS = [
-    "edad",
-    "intentos_previos"
-]
+NUMERICAS = ["intentos_previos"]
 
 CATEGORICAS = [
-    columna
-    for columna in COLUMNAS
-    if columna not in NUMERICAS
+    c for c in COLUMNAS
+    if c not in NUMERICAS
 ]
 
-# Modelo que utilizara FastAPI
-MODELO_OBLIGATORIO = "Red Neuronal MLP"
+GRUPOS = [
+    "motivacion_inicial",
+    "intentos_previos",
+    "sistema_apoyo",
+    "complejidad_plan",
+    "estres"
+]
 
-# Maximo de epocas para la red neuronal
-MAX_ITERACIONES = 500
-
-
-# ==========================================
-# NORMALIZACION DE DATOS
-# ==========================================
 
 def normalizar(valor):
 
@@ -76,10 +72,7 @@ def normalizar(valor):
         return np.nan
 
     if isinstance(valor, bytes):
-        try:
-            valor = valor.decode("utf-8")
-        except UnicodeDecodeError:
-            valor = valor.decode("latin-1")
+        valor = valor.decode("utf-8")
 
     texto = str(valor).strip()
 
@@ -87,76 +80,52 @@ def normalizar(valor):
         return np.nan
 
     texto = "".join(
-        caracter
-        for caracter in unicodedata.normalize("NFKD", texto)
-        if not unicodedata.combining(caracter)
+        c for c in unicodedata.normalize(
+            "NFKD", texto
+        )
+        if not unicodedata.combining(c)
     )
 
     return texto.lower()
 
 
-# ==========================================
-# CARGAR DATASET ARFF
-# ==========================================
-
 def cargar_datos():
 
-    if not ARCHIVO.exists():
-        raise FileNotFoundError(
-            f"No se encontro el dataset: {ARCHIVO}"
-        )
+    if not ARFF.exists():
+        raise FileNotFoundError(ARFF)
 
-    datos, _ = arff.loadarff(str(ARCHIVO))
-
+    datos, _ = arff.loadarff(str(ARFF))
     df = pd.DataFrame(datos)
 
     faltantes = [
-        columna
-        for columna in COLUMNAS
-        if columna not in df.columns
+        col for col in COLUMNAS + ["clase"]
+        if col not in df.columns
     ]
 
     if faltantes:
         raise ValueError(
-            f"Faltan columnas en el ARFF: {faltantes}"
+            f"Faltan columnas: {faltantes}"
         )
 
-    # La ultima columna corresponde a la clase
-    objetivo = df.columns[-1]
+    for col in CATEGORICAS + ["clase"]:
+        df[col] = df[col].map(normalizar)
 
-    if objetivo in COLUMNAS:
+    df["intentos_previos"] = pd.to_numeric(
+        df["intentos_previos"],
+        errors="coerce"
+    )
+
+    if df[COLUMNAS + ["clase"]].isna().any().any():
         raise ValueError(
-            "La ultima columna debe ser la clase de adherencia."
+            "Hay valores faltantes en el ARFF"
         )
 
-    for columna in CATEGORICAS:
-        df[columna] = df[columna].map(normalizar)
-
-    for columna in NUMERICAS:
-        df[columna] = pd.to_numeric(
-            df[columna],
-            errors="coerce"
-        )
-
-    df[objetivo] = df[objetivo].map(normalizar)
-
-    df = df.dropna(subset=[objetivo])
-
-    if df.empty:
-        raise ValueError(
-            "El dataset no tiene etiquetas validas."
-        )
-
-    return df, objetivo
+    return df, "clase"
 
 
-# ==========================================
-# PREPROCESAMIENTO
-# ==========================================
+def crear_modelo():
 
-def crear_pipeline(algoritmo):
-
-    preparacion = ColumnTransformer([
+    preprocesamiento = ColumnTransformer([
         (
             "numericas",
             Pipeline([
@@ -192,291 +161,117 @@ def crear_pipeline(algoritmo):
         )
     ])
 
+    mlp = MLPClassifier(
+        hidden_layer_sizes=(32, 16),
+        activation="relu",
+        solver="adam",
+        learning_rate_init=0.001,
+        alpha=0.01,
+        max_iter=500,
+        early_stopping=True,
+        validation_fraction=0.15,
+        n_iter_no_change=30,
+        random_state=42
+    )
+
     return Pipeline([
-        ("preparacion", preparacion),
-        ("modelo", algoritmo)
+        ("preparacion", preprocesamiento),
+        ("modelo", mlp)
     ])
 
 
-# ==========================================
-# ENTRENAMIENTO DE MODELOS
-# ==========================================
-
 def entrenar():
 
-    print("\n========================================")
-    print("NUTRI VIDA - ENTRENAMIENTO PREDICTIVO")
-    print("========================================")
-
-    df, objetivo = cargar_datos()
+    df, etiqueta = cargar_datos()
 
     X = df[COLUMNAS]
-    y = df[objetivo]
 
-    conteos = y.value_counts()
+    # Codificacion interna de las etiquetas.
+    # Al responder desde FastAPI volveremos
+    # a usar los nombres alta, media y baja.
+    encoder = LabelEncoder()
+    y = encoder.fit_transform(df[etiqueta])
 
-    if len(conteos) < 2 or conteos.min() < 2:
-        raise ValueError(
-            "Se necesitan al menos dos clases "
-            "y dos registros por clase."
-        )
+    grupos = (
+        df.groupby(GRUPOS, dropna=False)
+        .ngroup()
+        .to_numpy()
+    )
 
-    print(f"\nTotal de registros: {len(df)}")
-    print(f"Variable objetivo: {objetivo}")
+    cv = StratifiedGroupKFold(
+        n_splits=5,
+        shuffle=True,
+        random_state=42
+    )
 
-    # Separar entrenamiento y prueba
-    X_train, X_test, y_train, y_test = train_test_split(
+    resultados = cross_validate(
+        crear_modelo(),
         X,
         y,
-        test_size=0.20,
-        random_state=42,
-        stratify=y
+        groups=grupos,
+        cv=cv,
+        scoring={
+            "accuracy": "accuracy",
+            "f1_macro": "f1_macro"
+        },
+        error_score="raise",
+        n_jobs=1
     )
 
-    print(f"Registros de entrenamiento: {len(X_train)}")
-    print(f"Registros de prueba: {len(X_test)}")
-
-    # ======================================
-    # ALGORITMOS A COMPARAR
-    # ======================================
-
-    algoritmos = {
-
-        "Random Forest": RandomForestClassifier(
-            n_estimators=250,
-            random_state=42,
-            class_weight="balanced",
-            n_jobs=-1
-        ),
-
-        "Regresion Logistica": LogisticRegression(
-            max_iter=2000,
-            class_weight="balanced",
-            random_state=42
-        ),
-
-        "Red Neuronal MLP": MLPClassifier(
-            hidden_layer_sizes=(32, 16),
-            activation="relu",
-            solver="adam",
-            learning_rate_init=0.001,
-            alpha=0.01,
-            max_iter=MAX_ITERACIONES,
-            early_stopping=True,
-            validation_fraction=0.15,
-            n_iter_no_change=30,
-            random_state=42
-        )
-    }
-
-    resultados = {}
-    modelos_entrenados = {}
-
-    # ======================================
-    # ENTRENAR Y EVALUAR
-    # ======================================
-
-    for nombre, algoritmo in algoritmos.items():
-
-        print("\n----------------------------------------")
-        print(f"Entrenando: {nombre}")
-        print("----------------------------------------")
-
-        pipeline = crear_pipeline(algoritmo)
-
-        with warnings.catch_warnings(record=True) as avisos:
-            warnings.simplefilter(
-                "always",
-                ConvergenceWarning
-            )
-            pipeline.fit(X_train, y_train)
-
-        for aviso in avisos:
-            if issubclass(
-                aviso.category,
-                ConvergenceWarning
-            ):
-                print(
-                    "Aviso de convergencia:",
-                    str(aviso.message)
-                )
-
-        predicciones = pipeline.predict(X_test)
-
-        accuracy = accuracy_score(
-            y_test,
-            predicciones
-        )
-
-        f1 = f1_score(
-            y_test,
-            predicciones,
-            average="macro",
-            zero_division=0
-        )
-
-        resultados[nombre] = {
-            "accuracy": round(float(accuracy), 4),
-            "f1_macro": round(float(f1), 4),
-            "matriz_confusion": confusion_matrix(
-                y_test,
-                predicciones,
-                labels=pipeline.classes_
-            ).tolist(),
-            "reporte": classification_report(
-                y_test,
-                predicciones,
-                labels=pipeline.classes_,
-                output_dict=True,
-                zero_division=0
-            )
-        }
-
-        modelos_entrenados[nombre] = pipeline
-
-        print(f"Accuracy: {accuracy:.4f}")
-        print(f"F1 macro: {f1:.4f}")
-
-        # Mostrar informacion de entrenamiento MLP
-        if nombre == MODELO_OBLIGATORIO:
-
-            red = pipeline.named_steps["modelo"]
-
-            resultados[nombre]["iteraciones"] = int(
-                red.n_iter_
-            )
-
-            resultados[nombre]["max_iteraciones"] = (
-                MAX_ITERACIONES
-            )
-
-            resultados[nombre]["arquitectura"] = list(
-                red.hidden_layer_sizes
-            )
-
-            resultados[nombre]["perdida_final"] = float(
-                red.loss_
-            )
-
-            print("\nDATOS DE LA RED NEURONAL:")
-            print("Tipo: MLPClassifier")
-            print("Capas ocultas: (32, 16)")
-            print(
-                f"Iteraciones realizadas: "
-                f"{red.n_iter_}/{MAX_ITERACIONES}"
-            )
-            print(
-                f"Perdida final: {red.loss_:.6f}"
-            )
-
-    # ======================================
-    # SELECCIONAR LA RED NEURONAL
-    # ======================================
-
-    # Conservar la comparacion de resultados,
-    # pero NO seleccionar Random Forest.
-
-    mejor_por_f1 = max(
-        resultados,
-        key=lambda nombre: resultados[nombre]["f1_macro"]
+    exactitud = float(
+        np.mean(resultados["test_accuracy"])
     )
 
-    elegido = MODELO_OBLIGATORIO
-
-    print("\n========================================")
-    print("COMPARACION FINAL DE MODELOS")
-    print("========================================")
-
-    for nombre, metricas in resultados.items():
-
-        print(
-            f"{nombre}: "
-            f"Accuracy={metricas['accuracy']:.4f} | "
-            f"F1={metricas['f1_macro']:.4f}"
-        )
-
-    print(
-        f"\nMejor algoritmo segun F1: {mejor_por_f1}"
+    f1 = float(
+        np.mean(resultados["test_f1_macro"])
     )
 
-    print(
-        f"Modelo seleccionado para NUTRI VIDA: {elegido}"
-    )
+    print("\nNUTRI VIDA - MODELO MLP V2")
+    print("Registros:", len(df))
+    print("Variables:", len(COLUMNAS))
+    print(f"Accuracy CV: {exactitud:.4f}")
+    print(f"F1 macro CV: {f1:.4f}")
 
-    # ======================================
-    # GUARDAR MODELO NEURONAL
-    # ======================================
+    # Entrenar el modelo que utilizara la API.
+    modelo = crear_modelo()
+    modelo.fit(X, y)
 
     MODELO.parent.mkdir(
         parents=True,
         exist_ok=True
     )
 
-    joblib.dump(
-        {
-            "pipeline": modelos_entrenados[elegido],
-            "columnas": COLUMNAS,
-            "algoritmo": elegido
-        },
-        MODELO
-    )
-
-    # ======================================
-    # GENERAR REPORTE DE EVALUACION
-    # ======================================
-
-    red_entrenada = modelos_entrenados[
-        elegido
-    ].named_steps["modelo"]
-
-    resumen = {
-        "total_registros": int(len(df)),
-        "entrenamiento": int(len(X_train)),
-        "prueba": int(len(X_test)),
-        "variable_objetivo": str(objetivo),
-        "distribucion_clases": {
-            str(clase): int(cantidad)
-            for clase, cantidad in conteos.items()
-        },
-        "modelo_seleccionado": elegido,
-        "mejor_modelo_segun_f1": mejor_por_f1,
-        "tipo_modelo": "Red Neuronal Artificial MLP",
-        "arquitectura": [32, 16],
-        "iteraciones_maximas": MAX_ITERACIONES,
-        "iteraciones_realizadas": int(
-            red_entrenada.n_iter_
-        ),
-        "evaluacion": resultados
-    }
+    joblib.dump({
+        "pipeline": modelo,
+        "columnas": COLUMNAS,
+        "algoritmo": "Red Neuronal MLP",
+        "dataset": ARFF.name,
+        "tipo_datos": "sinteticos",
+        "version": "v2-6-variables",
+        "etiquetas": encoder.classes_.tolist()
+    }, MODELO)
 
     REPORTE.write_text(
-        json.dumps(
-            resumen,
-            indent=2,
-            ensure_ascii=False
-        ),
+        json.dumps({
+            "dataset": ARFF.name,
+            "registros": len(df),
+            "columnas": COLUMNAS,
+            "accuracy_cv": exactitud,
+            "f1_macro_cv": f1,
+            "f1_por_particion": [
+                float(x)
+                for x in resultados["test_f1_macro"]
+            ],
+            "advertencia": (
+                "Datos sinteticos, "
+                "sin validacion clinica."
+            )
+        }, ensure_ascii=False, indent=2),
         encoding="utf-8"
     )
 
-    # ======================================
-    # RESULTADO FINAL
-    # ======================================
-
-    print("\n========================================")
-    print("ENTRENAMIENTO FINALIZADO")
-    print("========================================")
-
-    print("Modelo seleccionado: Red Neuronal MLP")
-
-    print(
-        f"Iteraciones realizadas: "
-        f"{red_entrenada.n_iter_}/{MAX_ITERACIONES}"
-    )
-
-    print(f"Modelo guardado en: {MODELO}")
-    print(f"Evaluacion guardada en: {REPORTE}")
-
-    print("========================================\n")
+    print("\nModelo guardado:")
+    print(MODELO)
 
 
 if __name__ == "__main__":
