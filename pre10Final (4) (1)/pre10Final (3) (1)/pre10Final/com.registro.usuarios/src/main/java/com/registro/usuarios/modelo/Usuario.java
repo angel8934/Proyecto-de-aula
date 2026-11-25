@@ -20,12 +20,11 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "usuarios", uniqueConstraints = @UniqueConstraint(columnNames = "email"),
-		indexes = {
-			@Index(name = "idx_usuario_nombre", columnList = "nombre"),
-			@Index(name = "idx_usuario_apellido", columnList = "apellido"),
-			@Index(name = "idx_usuario_email", columnList = "email")
-		})
+@Table(name = "usuarios", uniqueConstraints = @UniqueConstraint(columnNames = "email"), indexes = {
+		@Index(name = "idx_usuario_nombre", columnList = "nombre"),
+		@Index(name = "idx_usuario_apellido", columnList = "apellido"),
+		@Index(name = "idx_usuario_email", columnList = "email")
+})
 public class Usuario {
 
 	@Id
@@ -37,24 +36,31 @@ public class Usuario {
 
 	@Column(name = "apellido")
 	private String apellido;
-	
-	@Column(name= "edad")
+
+	@Column(name = "edad")
 	private int edad;
-	
-	@Column (name="celular")
+
+	@Column(name = "celular")
 	private String celular;
 
 	private String email;
 
+	@Column(name = "email_verificado", nullable = false)
+	private boolean emailVerificado = true;
+
+	public boolean isEmailVerificado() {
+		return emailVerificado;
+	}
+
+	public void setEmailVerificado(boolean emailVerificado) {
+		this.emailVerificado = emailVerificado;
+	}
+
 	@JsonIgnore
 	private String password;
-	
-	@ManyToMany(fetch = FetchType.EAGER, cascade= CascadeType.ALL)
-	@JoinTable(
-			name = "usuarios_roles",
-			joinColumns = @JoinColumn(name ="usuarios_id",referencedColumnName = "id"),
-			inverseJoinColumns = @JoinColumn(name = "rol_id", referencedColumnName = "id")
-			)
+
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinTable(name = "usuarios_roles", joinColumns = @JoinColumn(name = "usuarios_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "rol_id", referencedColumnName = "id"))
 	private Collection<Rol> roles;
 
 	public long getId() {
@@ -80,8 +86,6 @@ public class Usuario {
 	public void setApellido(String apellido) {
 		this.apellido = apellido;
 	}
-	
-	
 
 	public int getEdad() {
 		return edad;
@@ -123,8 +127,6 @@ public class Usuario {
 		this.roles = roles;
 	}
 
-	
-	
 	public Usuario(long id, String nombre, String apellido, int edad, String celular, String email, String password,
 			Collection<Rol> roles) {
 		super();
@@ -138,7 +140,6 @@ public class Usuario {
 		this.roles = Collections.emptyList(); // Inicializa roles como una lista vacía
 	}
 
-	
 	public Usuario(String nombre, String apellido, int edad, String celular, String email, String password,
 			Collection<Rol> roles) {
 		super();
@@ -151,15 +152,13 @@ public class Usuario {
 		this.roles = roles;
 	}
 
-	
-
 	public Usuario() {
 		super();
 	}
-	
+
 	@Override
-    public String toString() {
-        return nombre + " " + apellido; // Devuelve el nombre y apellido del usuario
-    }
+	public String toString() {
+		return nombre + " " + apellido; // Devuelve el nombre y apellido del usuario
+	}
 
 }

@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="es">
+
 <head>
+
+    <meta th:if="${_csrf != null}" name="_csrf" th:content="${_csrf.token}">
+
+    <meta th:if="${_csrf != null}" name="_csrf_header" th:content="${_csrf.headerName}">
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Inicio de sesión</title>
@@ -18,7 +24,8 @@
             box-sizing: border-box;
         }
 
-        body, html {
+        body,
+        html {
             height: 100%;
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -41,7 +48,7 @@
             z-index: 1;
         }
 
-        .login-container {  
+        .login-container {
             display: flex;
             width: 90%;
             max-width: 1000px;
@@ -200,7 +207,7 @@
             transition: color 0.3s ease;
         }
 
-        .form-group input:focus + i {
+        .form-group input:focus+i {
             color: #007bff;
         }
 
@@ -315,12 +322,15 @@
                 transform: translateY(100vh) rotate(0deg);
                 opacity: 0;
             }
+
             10% {
                 opacity: 1;
             }
+
             90% {
                 opacity: 1;
             }
+
             100% {
                 transform: translateY(-100px) rotate(360deg);
                 opacity: 0;
@@ -333,7 +343,8 @@
                 max-width: 600px;
             }
 
-            .login-image, .login-form {
+            .login-image,
+            .login-form {
                 min-width: 100%;
             }
 
@@ -387,7 +398,8 @@
     <div class="login-container">
         <div class="login-image">
             <div class="login-image-content">
-                <img src="https://i.ibb.co/WNVMdWcm/Whats-App-Image-2025-10-27-at-2-50-55-PM.jpg" alt="Logo Nutri Vida" style="width: 140px; max-width: 140px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.3);">
+                <img src="https://i.ibb.co/WNVMdWcm/Whats-App-Image-2025-10-27-at-2-50-55-PM.jpg" alt="Logo Nutri Vida"
+                    style="width: 140px; max-width: 140px; border-radius: 50%; border: 4px solid rgba(255,255,255,0.3);">
                 <h2>Nutri Vida</h2>
                 <p style="font-size: 1rem;">Pequeños cambios, Grandes resultados</p>
                 <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.8;">Gestión integral de salud y nutrición</p>
@@ -396,7 +408,8 @@
 
         <div class="login-form">
             <div class="login-header">
-                <img src="https://i.ibb.co/WNVMdWcm/Whats-App-Image-2025-10-27-at-2-50-55-PM.jpg" alt="Logo" style="border-radius: 50%;">
+                <img src="https://i.ibb.co/WNVMdWcm/Whats-App-Image-2025-10-27-at-2-50-55-PM.jpg" alt="Logo"
+                    style="border-radius: 50%;">
                 <h3>BIENVENIDO</h3>
             </div>
 
@@ -418,13 +431,15 @@
 
                 <div class="form-group">
                     <label for="username">Nombre de usuario:</label>
-                    <input id="username" name="username" type="text" class="form-control" required autofocus placeholder="Digite su email ID">
+                    <input id="username" name="username" type="text" class="form-control" required autofocus
+                        placeholder="Digite su email ID">
                     <i class="fas fa-user"></i>
                 </div>
 
                 <div class="form-group">
                     <label for="password">Contraseña:</label>
-                    <input id="password" name="password" type="password" class="form-control" required placeholder="Digite su contraseña">
+                    <input id="password" name="password" type="password" class="form-control" required
+                        placeholder="Digite su contraseña">
                     <i class="fas fa-lock"></i>
                 </div>
 
@@ -436,6 +451,25 @@
                         <i class="fas fa-user-plus me-2"></i>REGISTRAR
                     </button>
                 </div>
+
+
+
+                <div id="acceso-huella-apk" class="mt-3 text-center" style="display: none;"
+                    th:if="${@environment.getProperty('passkeys.enabled', 'false') == 'true'}">
+
+
+                    <button type="button" id="btn-huella" class="btn btn-outline-primary w-100"
+                        style="border-radius:30px; padding:12px;">
+                        <i class="fas fa-fingerprint me-2"></i>
+                        INGRESAR CON HUELLA
+                    </button>
+
+                    <small class="text-muted d-block mt-2">
+                        Primero debes activar tu huella
+                        desde una sesión iniciada.
+                    </small>
+                </div>
+
 
                 <div class="additional-options">
                     <a href="#">¿Olvidaste tu contraseña?</a>
@@ -452,29 +486,29 @@
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
             const particleCount = 30;
-            
+
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
-                
+
                 // Posición aleatoria
                 const left = Math.random() * 100;
                 const size = Math.random() * 6 + 2;
                 const delay = Math.random() * 15;
                 const duration = Math.random() * 10 + 10;
-                
+
                 particle.style.left = `${left}%`;
                 particle.style.width = `${size}px`;
                 particle.style.height = `${size}px`;
                 particle.style.animationDelay = `${delay}s`;
                 particle.style.animationDuration = `${duration}s`;
-                
+
                 particlesContainer.appendChild(particle);
             }
         }
-        
+
         // Validación del formulario
-        document.getElementById('login-form').addEventListener('submit', function(event) {
+        document.getElementById('login-form').addEventListener('submit', function (event) {
             const usuario = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
@@ -484,13 +518,195 @@
             }
         });
 
-        document.getElementById('btn-registrarse').addEventListener('click', function() {
+        document.getElementById('btn-registrarse').addEventListener('click', function () {
             window.location.href = '/registro';
         });
-        
+
         // Inicializar partículas cuando se carga la página
         window.addEventListener('DOMContentLoaded', createParticles);
     </script>
 
+    <script>
+        function base64urlABytes(texto) {
+
+            const base64 = texto
+                .replace(/-/g, "+")
+                .replace(/_/g, "/");
+
+            const completado = base64.padEnd(
+                Math.ceil(base64.length / 4) * 4,
+                "="
+            );
+
+            return Uint8Array.from(
+                atob(completado),
+                c => c.charCodeAt(0)
+            );
+        }
+
+        function bytesABase64url(buffer) {
+
+            const bytes = new Uint8Array(buffer);
+
+            let binario = "";
+
+            for (const byte of bytes) {
+                binario += String.fromCharCode(byte);
+            }
+
+            return btoa(binario)
+                .replace(/\+/g, "-")
+                .replace(/\//g, "_")
+                .replace(/=/g, "");
+        }
+
+        function cabecerasPasskey() {
+
+            const cabeceras = {
+                "Content-Type": "application/json"
+            };
+
+            const header = document.querySelector(
+                'meta[name="_csrf_header"]'
+            )?.content;
+
+            const token = document.querySelector(
+                'meta[name="_csrf"]'
+            )?.content;
+
+            if (header && token) {
+                cabeceras[header] = token;
+            }
+
+            return cabeceras;
+        }
+
+
+        document.getElementById("btn-huella")
+            ?.addEventListener("click", async function () {
+
+
+                const boton = this;
+                boton.disabled = true;
+
+                try {
+
+                    if (!window.PublicKeyCredential) {
+                        throw new Error(
+                            "Este dispositivo no admite passkeys."
+                        );
+                    }
+
+                    const respuestaOpciones = await fetch(
+                        "/webauthn/authenticate/options",
+                        {
+                            method: "POST",
+                            credentials: "same-origin",
+                            headers: cabecerasPasskey()
+                        }
+                    );
+
+                    if (!respuestaOpciones.ok) {
+                        throw new Error(
+                            "No se pudieron preparar las credenciales."
+                        );
+                    }
+
+                    const opciones =
+                        await respuestaOpciones.json();
+
+                    opciones.challenge =
+                        base64urlABytes(opciones.challenge);
+
+                    opciones.allowCredentials =
+                        (opciones.allowCredentials || [])
+                            .map(credencial => ({
+                                ...credencial,
+                                id: base64urlABytes(credencial.id)
+                            }));
+
+                    const credencial =
+                        await navigator.credentials.get({
+                            publicKey: opciones
+                        });
+
+                    if (!credencial) {
+                        throw new Error(
+                            "No se seleccionó una credencial."
+                        );
+                    }
+
+                    const cuerpo = {
+                        id: credencial.id,
+                        rawId: bytesABase64url(
+                            credencial.rawId
+                        ),
+                        type: credencial.type,
+                        response: {
+                            authenticatorData: bytesABase64url(
+                                credencial.response.authenticatorData
+                            ),
+                            clientDataJSON: bytesABase64url(
+                                credencial.response.clientDataJSON
+                            ),
+                            signature: bytesABase64url(
+                                credencial.response.signature
+                            ),
+                            userHandle: credencial.response.userHandle
+                                ? bytesABase64url(
+                                    credencial.response.userHandle
+                                )
+                                : null
+                        },
+                        clientExtensionResults:
+                            credencial.getClientExtensionResults(),
+                        authenticatorAttachment:
+                            credencial.authenticatorAttachment
+                    };
+
+                    const respuesta = await fetch(
+                        "/login/webauthn",
+                        {
+                            method: "POST",
+                            credentials: "same-origin",
+                            headers: cabecerasPasskey(),
+                            body: JSON.stringify(cuerpo)
+                        }
+                    );
+
+                    if (!respuesta.ok) {
+                        throw new Error(
+                            "La passkey no fue aceptada."
+                        );
+                    }
+
+                    const resultado = await respuesta.json();
+
+                    if (resultado.authenticated !== true) {
+                        throw new Error(
+                            "No se pudo iniciar sesión."
+                        );
+                    }
+
+                    window.location.replace("/inicio-passkey");
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    alert(
+                        "No fue posible ingresar con huella: " +
+                        error.message +
+                        "\nPuedes ingresar con tu contraseña."
+                    );
+
+                } finally {
+                    boton.disabled = false;
+                }
+            });
+    </script>
+
+
 </body>
+
 </html>

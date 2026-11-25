@@ -587,7 +587,7 @@
 					</div>
 
 					<div class="container text-center">
-						<h9>Bienvenido <span sec:authentication="principal.username"></span></h9>
+						<h9>Bienvenido <span sec:authentication="name"></span></h9>
 					</div>
 
 					<!-- Menú preciso -->
@@ -998,6 +998,9 @@
 				const comidas = await res.json();
 				mostrarComidas(comidas);
 				window.listaComidas = comidas;
+				filtrarComidas(
+					document.getElementById('buscarAlimento').value
+				);
 			} catch (error) {
 				const tbody = document.querySelector('#tablaNutricional');
 				tbody.innerHTML = '<tr><td colspan="6">Error cargando datos</td></tr>';
@@ -1023,6 +1026,36 @@
                     <td>${c.carbohidratos}</td>
                 `;
 				tbody.appendChild(tr);
+			});
+		}
+
+		function filtrarComidas(texto) {
+
+			const normalizar = valor => valor
+				.toLowerCase()
+				.normalize("NFD")
+				.replace(/[\u0300-\u036f]/g, "")
+				.trim();
+
+			const busqueda = normalizar(texto);
+
+			const filas = document.querySelectorAll(
+				'#tablaNutricional tr'
+			);
+
+			filas.forEach(fila => {
+
+				const celdaAlimento = fila.cells[1];
+
+				if (!celdaAlimento) return;
+
+				const nombre = normalizar(
+					celdaAlimento.textContent
+				);
+
+				fila.style.display = nombre.includes(busqueda)
+					? ''
+					: 'none';
 			});
 		}
 
@@ -1151,9 +1184,7 @@
 
 			if (inputBuscar) {
 				inputBuscar.addEventListener('input', function () {
-					const texto = this.value.toLowerCase();
-					const filtradas = window.listaComidas.filter(c => c.nombre.toLowerCase().includes(texto));
-					mostrarComidas(filtradas);
+					filtrarComidas(this.value);
 				});
 			}
 

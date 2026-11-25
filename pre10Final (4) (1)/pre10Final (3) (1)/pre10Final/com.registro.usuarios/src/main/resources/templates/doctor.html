@@ -697,389 +697,423 @@
                         Complete la información del paciente para obtener una predicción.
                     </p>
 
+
                     <form id="predictionForm">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-section">
-                                    <h4 class="form-section-title">Información del Paciente</h4>
 
+                        <div class="form-section">
+                            <h4 class="form-section-title">
+                                Información del Paciente
+                            </h4>
 
-                                    <div class="mb-3">
-                                        <label for="patientSelect" class="form-label">
-                                            Seleccionar Paciente
-                                        </label>
+                            <div class="mb-3">
+                                <label for="patientSelect" class="form-label">
+                                    Seleccionar Paciente
+                                </label>
 
-                                        <select class="form-select" id="patientSelect" disabled>
-                                            <option value="">Cargando pacientes de MySQL...</option>
-                                        </select>
+                                <select class="form-select" id="patientSelect" disabled>
+                                    <option value="">
+                                        Cargando pacientes de MySQL...
+                                    </option>
+                                </select>
 
-                                        <small id="estadoPacientesSelect" class="form-text text-muted">
-                                            Consultando pacientes registrados...
-                                        </small>
-                                    </div>
-
-
-                                    <div class="mb-3">
-                                        <label for="age" class="form-label">Edad</label>
-                                        <input type="number" class="form-control" id="age" min="18" max="100">
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label">Género</label>
-                                        <div>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="gender" id="male"
-                                                    value="male">
-                                                <label class="form-check-label" for="male">Masculino</label>
-                                            </div>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="gender" id="female"
-                                                    value="female">
-                                                <label class="form-check-label" for="female">Femenino</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-section">
-                                    <h4 class="form-section-title">Factores de Comportamiento</h4>
-
-                                    <div class="mb-3">
-                                        <label for="motivation" class="form-label">Nivel de Motivación Inicial</label>
-                                        <select class="form-select" id="motivation">
-                                            <option value="">-- Seleccione nivel --</option>
-                                            <option value="high">Alto</option>
-                                            <option value="medium">Medio</option>
-                                            <option value="low">Bajo</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="previousDiets" class="form-label">Intentos Previos de Dieta</label>
-                                        <input type="number" class="form-control" id="previousDiets" min="0" max="20">
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="supportSystem" class="form-label">Sistema de Apoyo</label>
-                                        <select class="form-select" id="supportSystem">
-                                            <option value="">-- Seleccione nivel --</option>
-                                            <option value="strong">Fuerte (familia/amigos)</option>
-                                            <option value="moderate">Moderado</option>
-                                            <option value="weak">Débil o inexistente</option>
-                                        </select>
-                                    </div>
-                                </div>
+                                <small id="estadoPacientesSelect" class="form-text text-muted">
+                                    Consultando pacientes registrados...
+                                </small>
                             </div>
                         </div>
+
+                        <div class="form-section">
+                            <h4 class="form-section-title">
+                                Factores de Predicción
+                            </h4>
+
+                            <div class="row g-3">
+
+                                <div class="col-md-6">
+                                    <label for="motivation" class="form-label">
+                                        Nivel de Motivación Inicial
+                                    </label>
+                                    <select class="form-select" id="motivation">
+                                        <option value="">-- Seleccione nivel --</option>
+                                        <option value="high">Alto</option>
+                                        <option value="medium">Medio</option>
+                                        <option value="low">Bajo</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="previousDiets" class="form-label">
+                                        Intentos Previos de Dieta
+                                    </label>
+                                    <input type="number" class="form-control" id="previousDiets" min="0" max="3"
+                                        step="1" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="supportSystem" class="form-label">
+                                        Sistema de Apoyo
+                                    </label>
+                                    <select class="form-select" id="supportSystem">
+                                        <option value="">-- Seleccione nivel --</option>
+                                        <option value="strong">
+                                            Fuerte (familia/amigos)
+                                        </option>
+                                        <option value="moderate">Moderado</option>
+                                        <option value="weak">
+                                            Débil o inexistente
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="stressLevel" class="form-label">
+                                        Nivel de Estrés
+                                    </label>
+                                    <select class="form-select" id="stressLevel">
+                                        <option value="">-- Seleccione nivel --</option>
+                                        <option value="low">Bajo</option>
+                                        <option value="moderate">Moderado</option>
+                                        <option value="high">Alto</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="dietComplexity" class="form-label">
+                                        Complejidad del Plan
+                                    </label>
+                                    <select class="form-select" id="dietComplexity">
+                                        <option value="">-- Seleccione nivel --</option>
+                                        <option value="simple">Simple</option>
+                                        <option value="moderate">Moderada</option>
+                                        <option value="complex">Compleja</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="foodPreferences" class="form-label">
+                                        Afinidad con el Plan
+                                    </label>
+                                    <select class="form-select" id="foodPreferences">
+                                        <option value="">-- Seleccione nivel --</option>
+                                        <option value="high">
+                                            Alta (le gusta la comida)
+                                        </option>
+                                        <option value="moderate">Moderada</option>
+                                        <option value="low">
+                                            Baja (no le gusta la comida)
+                                        </option>
+                                    </select>
+                                </div>
+
+                            </div>
+                        </div>
+
 
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-section">
                                     <h4 class="form-section-title">Factores de Estilo de Vida</h4>
-
-                                    <div class="mb-3">
-                                        <label for="activityLevel" class="form-label">Nivel de Actividad Física</label>
-                                        <select class="form-select" id="activityLevel">
-                                            <option value="">-- Seleccione nivel --</option>
-                                            <option value="high">Alto (5+ veces/semana)</option>
-                                            <option value="moderate">Moderado (3-4 veces/semana)</option>
-                                            <option value="low">Bajo (0-2 veces/semana)</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="stressLevel" class="form-label">Nivel de Estrés</label>
-                                        <select class="form-select" id="stressLevel">
-                                            <option value="">-- Seleccione nivel --</option>
-                                            <option value="low">Bajo</option>
-                                            <option value="moderate">Moderado</option>
-                                            <option value="high">Alto</option>
-                                        </select>
-                                    </div>
                                 </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-section">
-                                    <h4 class="form-section-title">Factores Nutricionales</h4>
-
-                                    <div class="mb-3">
-                                        <label for="dietComplexity" class="form-label">Complejidad del Plan</label>
-                                        <select class="form-select" id="dietComplexity">
-                                            <option value="">-- Seleccione nivel --</option>
-                                            <option value="simple">Simple</option>
-                                            <option value="moderate">Moderada</option>
-                                            <option value="complex">Compleja</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="foodPreferences" class="form-label">Afinidad con el Plan</label>
-                                        <select class="form-select" id="foodPreferences">
-                                            <option value="">-- Seleccione nivel --</option>
-                                            <option value="high">Alta (le gusta la comida)</option>
-                                            <option value="moderate">Moderada</option>
-                                            <option value="low">Baja (no le gusta la comida)</option>
-                                        </select>
-                                    </div>
+                                <div class="mb-3">
+                                    <label for="stressLevel" class="form-label">Nivel de Estrés</label>
+                                    <select class="form-select" id="stressLevel">
+                                        <option value="">-- Seleccione nivel --</option>
+                                        <option value="low">Bajo</option>
+                                        <option value="moderate">Moderado</option>
+                                        <option value="high">Alto</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="text-center mt-4">
-                            <button type="button" class="btn btn-primary btn-lg" onclick="calculatePrediction()">
-                                <i class="bi bi-calculator"></i> Calcular Predicción
-                            </button>
-                            <button type="reset" class="btn btn-outline-secondary btn-lg ms-2">
-                                <i class="bi bi-arrow-clockwise"></i> Limpiar Formulario
-                            </button>
-                        </div>
-                    </form>
+                        <div class="col-md-6">
+                            <div class="form-section">
+                                <h4 class="form-section-title">Factores Nutricionales</h4>
 
-                    <!-- Resultados de la predicción -->
-                    <div id="predictionResult" class="prediction-result">
-                        <h4 class="mb-3">Resultado de la Predicción</h4>
-
-                        <div class="row">
-                            <div class="col-md-8">
-                                <h5>Probabilidad de Adherencia: <span id="resultPercentage">0%</span></h5>
-                                <div class="progress">
-                                    <div id="resultProgress" class="progress-bar" role="progressbar" style="width: 0%">
-                                    </div>
+                                <div class="mb-3">
+                                    <label for="dietComplexity" class="form-label">Complejidad del Plan</label>
+                                    <select class="form-select" id="dietComplexity">
+                                        <option value="">-- Seleccione nivel --</option>
+                                        <option value="simple">Simple</option>
+                                        <option value="moderate">Moderada</option>
+                                        <option value="complex">Compleja</option>
+                                    </select>
                                 </div>
-                                <p id="resultDescription" class="mt-2"></p>
+
+                                <div class="mb-3">
+                                    <label for="foodPreferences" class="form-label">Afinidad con el Plan</label>
+                                    <select class="form-select" id="foodPreferences">
+                                        <option value="">-- Seleccione nivel --</option>
+                                        <option value="high">Alta (le gusta la comida)</option>
+                                        <option value="moderate">Moderada</option>
+                                        <option value="low">Baja (no le gusta la comida)</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="col-md-4 text-center">
-                                <div id="resultIcon" style="font-size: 3rem;"></div>
-                                <div id="resultLevel" class="mt-2 fw-bold"></div>
-                            </div>
                         </div>
+                </div>
 
-                        <div class="mt-4">
-                            <h6>Factores Clave Identificados:</h6>
-                            <div id="keyFactors"></div>
-                        </div>
+                <div class="text-center mt-4">
+                    <button type="button" class="btn btn-primary btn-lg" onclick="calculatePrediction()">
+                        <i class="bi bi-calculator"></i> Calcular Predicción
+                    </button>
+                    <button type="reset" class="btn btn-outline-secondary btn-lg ms-2">
+                        <i class="bi bi-arrow-clockwise"></i> Limpiar Formulario
+                    </button>
+                </div>
+                </form>
 
-                        <div class="mt-4">
-                            <h6>Recomendaciones:</h6>
-                            <ul id="recommendations" class="list-group"></ul>
-                        </div>
+                <!-- Resultados de la predicción -->
+                <div id="predictionResult" class="prediction-result">
+                    <h4 class="mb-3">Resultado de la Predicción</h4>
 
-                        <!-- RADAR DE ADHERENCIA -->
-                        <div class="mt-4">
-                            <h5 class="text-center">
-                                Perfil de Adherencia Nutricional
+                    <div class="row">
+                        <div class="col-md-8">
+
+                            <h5>
+                                Confianza estimada en la clase predicha:
+                                <span id="resultPercentage">0%</span>
                             </h5>
+                            <small class="text-muted">
+                                Este porcentaje representa la confianza estimada del modelo,
+                                no el porcentaje real de cumplimiento del plan nutricional.
+                            </small>
 
-                            <p class="text-muted text-center">
-                                Visualización de los factores del paciente.
-                            </p>
-
-                            <div id="radarAdherencia" style="width:100%; min-height:360px;">
+                            <div class="progress">
+                                <div id="resultProgress" class="progress-bar" role="progressbar" style="width: 0%">
+                                </div>
                             </div>
+                            <p id="resultDescription" class="mt-2"></p>
                         </div>
-
-
-
+                        <div class="col-md-4 text-center">
+                            <div id="resultIcon" style="font-size: 3rem;"></div>
+                            <div id="resultLevel" class="mt-2 fw-bold"></div>
+                        </div>
                     </div>
+
+                    <div class="mt-4">
+                        <h6>Factores Clave Identificados:</h6>
+                        <div id="keyFactors"></div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h6>Recomendaciones:</h6>
+                        <ul id="recommendations" class="list-group"></ul>
+                    </div>
+
+                    <!-- RADAR DE ADHERENCIA -->
+                    <div class="mt-4">
+                        <h5 class="text-center">
+                            Perfil de Adherencia Nutricional
+                        </h5>
+
+                        <p class="text-muted text-center">
+                            Visualización de los factores del paciente.
+                        </p>
+
+                        <div id="radarAdherencia" style="width:100%; min-height:360px;">
+                        </div>
+                    </div>
+
+
+
                 </div>
-            </div>
-
-            <!-- Pestaña Chat MCP para Doctores -->
-            <div id="chatMCP" class="tab-pane">
-                <div class="prediction-card">
-                    <div class="prediction-header">
-                        <div class="prediction-icon">
-                            <i class="bi bi-robot"></i>
-                        </div>
-                        <div>
-                            <h2 class="prediction-title" style="margin-bottom: 4px;">Asistente IA — Gestión de Citas
-                                (MCP)</h2>
-                            <p style="color: #6c757d; margin: 0; font-size: 0.9rem;">Gestione citas médicas con lenguaje
-                                natural. El agente IA ejecutará la acción correspondiente.</p>
-                        </div>
-                    </div>
-
-                    <!-- ═══ TARJETAS DE ACCIONES CRUD ═══ -->
-                    <div class="row g-3 mb-4">
-                        <!-- 📋 VER CITAS -->
-                        <div class="col-md-6 col-lg-3">
-                            <div style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 14px; padding: 18px; height: 100%; border: 1px solid #90caf9; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;"
-                                onmouseenter="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(33,150,243,0.2)'"
-                                onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                                <div style="display: flex; align-items: center; margin-bottom: 12px;">
-                                    <div
-                                        style="width: 42px; height: 42px; background: linear-gradient(135deg, #1976d2, #1565c0); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
-                                        <i class="bi bi-calendar-check" style="font-size: 1.2rem; color: white;"></i>
-                                    </div>
-                                    <h6 style="margin: 0; color: #1565c0; font-weight: 600;">Ver Citas</h6>
-                                </div>
-                                <p style="font-size: 0.78rem; color: #546e7a; margin-bottom: 10px;">Consulte sus citas,
-                                    las de un paciente o todas las del sistema.</p>
-                                <div class="d-flex flex-wrap gap-1">
-                                    <button class="btn btn-sm"
-                                        style="background: rgba(25,118,210,0.12); color: #1565c0; border: 1px solid rgba(25,118,210,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
-                                        onclick="usarEjemplo('Muéstrame mis citas programadas')">
-                                        📋 Mis citas
-                                    </button>
-                                    <button class="btn btn-sm"
-                                        style="background: rgba(25,118,210,0.12); color: #1565c0; border: 1px solid rgba(25,118,210,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
-                                        onclick="usarEjemplo('¿Qué citas tengo hoy?')">
-                                        📅 Citas de hoy
-                                    </button>
-                                    <button class="btn btn-sm"
-                                        style="background: rgba(25,118,210,0.12); color: #1565c0; border: 1px solid rgba(25,118,210,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
-                                        onclick="usarEjemplo('Muéstrame todas las citas del sistema')">
-                                        🏥 Todas las citas
-                                    </button>
-                                    <button class="btn btn-sm"
-                                        style="background: rgba(25,118,210,0.12); color: #1565c0; border: 1px solid rgba(25,118,210,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
-                                        onclick="usarEjemplo('Ver cita 1')">
-                                        🔍 Ver cita ID 1
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ➕ CREAR CITA -->
-                        <div class="col-md-6 col-lg-3">
-                            <div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 14px; padding: 18px; height: 100%; border: 1px solid #a5d6a7; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;"
-                                onmouseenter="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(76,175,80,0.2)'"
-                                onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                                <div style="display: flex; align-items: center; margin-bottom: 12px;">
-                                    <div
-                                        style="width: 42px; height: 42px; background: linear-gradient(135deg, #388e3c, #2e7d32); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
-                                        <i class="bi bi-plus-circle" style="font-size: 1.2rem; color: white;"></i>
-                                    </div>
-                                    <h6 style="margin: 0; color: #2e7d32; font-weight: 600;">Crear Cita</h6>
-                                </div>
-                                <p style="font-size: 0.78rem; color: #546e7a; margin-bottom: 10px;">Agende una nueva
-                                    cita indicando email, fecha, hora y lugar.</p>
-                                <div class="d-flex flex-wrap gap-1">
-                                    <button class="btn btn-sm"
-                                        style="background: rgba(56,142,60,0.12); color: #2e7d32; border: 1px solid rgba(56,142,60,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
-                                        onclick="usarEjemplo('Crear cita para paciente@email.com el 2026-06-15 10:00 en Consultorio A')">
-                                        ➕ Crear ejemplo
-                                    </button>
-                                    <button class="btn btn-sm"
-                                        style="background: rgba(56,142,60,0.12); color: #2e7d32; border: 1px solid rgba(56,142,60,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
-                                        onclick="usarEjemplo('Agendar cita para juan@correo.com el 2026-07-01 14:30 en Consultorio B')">
-                                        📝 Otro ejemplo
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- ✏️ MODIFICAR CITA -->
-                        <div class="col-md-6 col-lg-3">
-                            <div style="background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 14px; padding: 18px; height: 100%; border: 1px solid #ffcc80; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;"
-                                onmouseenter="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(255,152,0,0.2)'"
-                                onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                                <div style="display: flex; align-items: center; margin-bottom: 12px;">
-                                    <div
-                                        style="width: 42px; height: 42px; background: linear-gradient(135deg, #f57c00, #e65100); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
-                                        <i class="bi bi-pencil-square" style="font-size: 1.2rem; color: white;"></i>
-                                    </div>
-                                    <h6 style="margin: 0; color: #e65100; font-weight: 600;">Modificar Cita</h6>
-                                </div>
-                                <p style="font-size: 0.78rem; color: #546e7a; margin-bottom: 10px;">Cambie la fecha,
-                                    hora o lugar de una cita existente.</p>
-                                <div class="d-flex flex-wrap gap-1">
-                                    <button class="btn btn-sm"
-                                        style="background: rgba(245,124,0,0.12); color: #e65100; border: 1px solid rgba(245,124,0,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
-                                        onclick="usarEjemplo('Actualizar cita 5 para el 2026-06-20 14:00 en Consultorio B')">
-                                        ✏️ Cambiar fecha
-                                    </button>
-                                    <button class="btn btn-sm"
-                                        style="background: rgba(245,124,0,0.12); color: #e65100; border: 1px solid rgba(245,124,0,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
-                                        onclick="usarEjemplo('Reprogramar cita 3 para el 2026-07-10 09:00 en Sala Norte')">
-                                        🔄 Reprogramar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 🗑️ ELIMINAR CITA -->
-                        <div class="col-md-6 col-lg-3">
-                            <div style="background: linear-gradient(135deg, #fce4ec, #f8bbd0); border-radius: 14px; padding: 18px; height: 100%; border: 1px solid #f48fb1; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;"
-                                onmouseenter="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(233,30,99,0.2)'"
-                                onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                                <div style="display: flex; align-items: center; margin-bottom: 12px;">
-                                    <div
-                                        style="width: 42px; height: 42px; background: linear-gradient(135deg, #e53935, #c62828); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
-                                        <i class="bi bi-trash3" style="font-size: 1.2rem; color: white;"></i>
-                                    </div>
-                                    <h6 style="margin: 0; color: #c62828; font-weight: 600;">Eliminar Cita</h6>
-                                </div>
-                                <p style="font-size: 0.78rem; color: #546e7a; margin-bottom: 10px;">Cancele y elimine
-                                    una cita indicando su número de ID.</p>
-                                <div class="d-flex flex-wrap gap-1">
-                                    <button class="btn btn-sm"
-                                        style="background: rgba(229,57,53,0.12); color: #c62828; border: 1px solid rgba(229,57,53,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
-                                        onclick="usarEjemplo('Eliminar cita 5')">
-                                        🗑️ Eliminar ID 5
-                                    </button>
-                                    <button class="btn btn-sm"
-                                        style="background: rgba(229,57,53,0.12); color: #c62828; border: 1px solid rgba(229,57,53,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
-                                        onclick="usarEjemplo('Cancelar cita 10')">
-                                        ❌ Cancelar ID 10
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ═══ ÁREA DE CHAT ═══ -->
-                    <div id="doctorChatBox"
-                        style="border: 1px solid #dee2e6; border-radius: 14px; height: calc(100vh - 580px); min-height: 250px; overflow-y: auto; padding: 20px; background: linear-gradient(180deg, #f0f4f8 0%, #ffffff 100%); margin-bottom: 15px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.04);">
-                        <div style="text-align: center; color: #adb5bd; padding: 30px;">
-                            <div
-                                style="width: 64px; height: 64px; background: linear-gradient(135deg, #007bff, #0056b3); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 4px 15px rgba(0,123,255,0.3);">
-                                <i class="bi bi-chat-dots" style="font-size: 1.6rem; color: white;"></i>
-                            </div>
-                            <p class="mt-2" style="font-size: 1rem; font-weight: 500; color: #6c757d;">Seleccione una
-                                acción o escriba su consulta</p>
-                            <p style="font-size: 0.82rem; color: #adb5bd;">Puede ver, crear, modificar o eliminar citas
-                                desde aquí</p>
-                        </div>
-                    </div>
-
-                    <!-- ═══ BARRA DE ENTRADA ═══ -->
-                    <div class="input-group"
-                        style="box-shadow: 0 2px 10px rgba(0,0,0,0.08); border-radius: 25px; overflow: hidden;">
-                        <input type="text" id="doctorMensaje" class="form-control"
-                            placeholder="Escriba su consulta sobre citas... (ej: 'Mis citas', 'Crear cita para...')"
-                            onkeypress="if(event.key==='Enter') enviarMensajeDoctor()"
-                            style="border-radius: 25px 0 0 25px; border: 2px solid #dee2e6; border-right: none; padding: 12px 20px; font-size: 0.95rem;">
-                        <button class="btn btn-primary" onclick="enviarMensajeDoctor()"
-                            style="border-radius: 0 25px 25px 0; padding: 12px 24px; font-weight: 500; background: linear-gradient(135deg, #007bff, #0056b3); border: none;">
-                            <i class="bi bi-send-fill"></i> Enviar
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ✅ DASHBOARD POWER BI CORREGIDO -->
-            <div id="dashboardPowerBI" class="tab-pane">
-                <div style="text-align: center; margin-bottom: 25px;">
-                    <h2 style="color: #0056b3; border-bottom: none;">📊 Dashboard Nutri Vida</h2>
-                    <p style="color: #6c757d;">Visualiza métricas clave sobre los usuarios, estadísticas y tendencias en
-                        nuestra comunidad.</p>
-                </div>
-                <div class="dashboard-container">
-                    <iframe
-                        src="https://app.powerbi.com/view?r=eyJrIjoiMzM3NzhiNTUtZTE3MS00ZWMxLTg2MTEtNTIyYTk1ZTgxYjFmIiwidCI6IjlkMTJiZjNmLWU0ZjYtNDdhYi05MTJmLTFhMmYwZmM0OGFhNCIsImMiOjR9"
-                        allowFullScreen="true">
-                    </iframe>
-                </div>
-                <p class="text-muted text-center mt-3" style="font-size: 0.85rem; color: #6c757d;">
-                    <i class="bi bi-info-circle"></i> Los datos se actualizan automáticamente desde nuestra base de
-                    datos.
-                </p>
             </div>
         </div>
+
+        <!-- Pestaña Chat MCP para Doctores -->
+        <div id="chatMCP" class="tab-pane">
+            <div class="prediction-card">
+                <div class="prediction-header">
+                    <div class="prediction-icon">
+                        <i class="bi bi-robot"></i>
+                    </div>
+                    <div>
+                        <h2 class="prediction-title" style="margin-bottom: 4px;">Asistente IA — Gestión de Citas
+                            (MCP)</h2>
+                        <p style="color: #6c757d; margin: 0; font-size: 0.9rem;">Gestione citas médicas con lenguaje
+                            natural. El agente IA ejecutará la acción correspondiente.</p>
+                    </div>
+                </div>
+
+                <!-- ═══ TARJETAS DE ACCIONES CRUD ═══ -->
+                <div class="row g-3 mb-4">
+                    <!-- 📋 VER CITAS -->
+                    <div class="col-md-6 col-lg-3">
+                        <div style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 14px; padding: 18px; height: 100%; border: 1px solid #90caf9; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;"
+                            onmouseenter="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(33,150,243,0.2)'"
+                            onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                                <div
+                                    style="width: 42px; height: 42px; background: linear-gradient(135deg, #1976d2, #1565c0); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                    <i class="bi bi-calendar-check" style="font-size: 1.2rem; color: white;"></i>
+                                </div>
+                                <h6 style="margin: 0; color: #1565c0; font-weight: 600;">Ver Citas</h6>
+                            </div>
+                            <p style="font-size: 0.78rem; color: #546e7a; margin-bottom: 10px;">Consulte sus citas,
+                                las de un paciente o todas las del sistema.</p>
+                            <div class="d-flex flex-wrap gap-1">
+                                <button class="btn btn-sm"
+                                    style="background: rgba(25,118,210,0.12); color: #1565c0; border: 1px solid rgba(25,118,210,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                    onclick="usarEjemplo('Muéstrame mis citas programadas')">
+                                    📋 Mis citas
+                                </button>
+                                <button class="btn btn-sm"
+                                    style="background: rgba(25,118,210,0.12); color: #1565c0; border: 1px solid rgba(25,118,210,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                    onclick="usarEjemplo('¿Qué citas tengo hoy?')">
+                                    📅 Citas de hoy
+                                </button>
+                                <button class="btn btn-sm"
+                                    style="background: rgba(25,118,210,0.12); color: #1565c0; border: 1px solid rgba(25,118,210,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                    onclick="usarEjemplo('Muéstrame todas las citas del sistema')">
+                                    🏥 Todas las citas
+                                </button>
+                                <button class="btn btn-sm"
+                                    style="background: rgba(25,118,210,0.12); color: #1565c0; border: 1px solid rgba(25,118,210,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                    onclick="usarEjemplo('Ver cita 1')">
+                                    🔍 Ver cita ID 1
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ➕ CREAR CITA -->
+                    <div class="col-md-6 col-lg-3">
+                        <div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 14px; padding: 18px; height: 100%; border: 1px solid #a5d6a7; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;"
+                            onmouseenter="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(76,175,80,0.2)'"
+                            onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                                <div
+                                    style="width: 42px; height: 42px; background: linear-gradient(135deg, #388e3c, #2e7d32); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                    <i class="bi bi-plus-circle" style="font-size: 1.2rem; color: white;"></i>
+                                </div>
+                                <h6 style="margin: 0; color: #2e7d32; font-weight: 600;">Crear Cita</h6>
+                            </div>
+                            <p style="font-size: 0.78rem; color: #546e7a; margin-bottom: 10px;">Agende una nueva
+                                cita indicando email, fecha, hora y lugar.</p>
+                            <div class="d-flex flex-wrap gap-1">
+                                <button class="btn btn-sm"
+                                    style="background: rgba(56,142,60,0.12); color: #2e7d32; border: 1px solid rgba(56,142,60,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                    onclick="usarEjemplo('Crear cita para paciente@email.com el 2026-06-15 10:00 en Consultorio A')">
+                                    ➕ Crear ejemplo
+                                </button>
+                                <button class="btn btn-sm"
+                                    style="background: rgba(56,142,60,0.12); color: #2e7d32; border: 1px solid rgba(56,142,60,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                    onclick="usarEjemplo('Agendar cita para juan@correo.com el 2026-07-01 14:30 en Consultorio B')">
+                                    📝 Otro ejemplo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ✏️ MODIFICAR CITA -->
+                    <div class="col-md-6 col-lg-3">
+                        <div style="background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 14px; padding: 18px; height: 100%; border: 1px solid #ffcc80; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;"
+                            onmouseenter="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(255,152,0,0.2)'"
+                            onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                                <div
+                                    style="width: 42px; height: 42px; background: linear-gradient(135deg, #f57c00, #e65100); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                    <i class="bi bi-pencil-square" style="font-size: 1.2rem; color: white;"></i>
+                                </div>
+                                <h6 style="margin: 0; color: #e65100; font-weight: 600;">Modificar Cita</h6>
+                            </div>
+                            <p style="font-size: 0.78rem; color: #546e7a; margin-bottom: 10px;">Cambie la fecha,
+                                hora o lugar de una cita existente.</p>
+                            <div class="d-flex flex-wrap gap-1">
+                                <button class="btn btn-sm"
+                                    style="background: rgba(245,124,0,0.12); color: #e65100; border: 1px solid rgba(245,124,0,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                    onclick="usarEjemplo('Actualizar cita 5 para el 2026-06-20 14:00 en Consultorio B')">
+                                    ✏️ Cambiar fecha
+                                </button>
+                                <button class="btn btn-sm"
+                                    style="background: rgba(245,124,0,0.12); color: #e65100; border: 1px solid rgba(245,124,0,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                    onclick="usarEjemplo('Reprogramar cita 3 para el 2026-07-10 09:00 en Sala Norte')">
+                                    🔄 Reprogramar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 🗑️ ELIMINAR CITA -->
+                    <div class="col-md-6 col-lg-3">
+                        <div style="background: linear-gradient(135deg, #fce4ec, #f8bbd0); border-radius: 14px; padding: 18px; height: 100%; border: 1px solid #f48fb1; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer;"
+                            onmouseenter="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(233,30,99,0.2)'"
+                            onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                                <div
+                                    style="width: 42px; height: 42px; background: linear-gradient(135deg, #e53935, #c62828); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                                    <i class="bi bi-trash3" style="font-size: 1.2rem; color: white;"></i>
+                                </div>
+                                <h6 style="margin: 0; color: #c62828; font-weight: 600;">Eliminar Cita</h6>
+                            </div>
+                            <p style="font-size: 0.78rem; color: #546e7a; margin-bottom: 10px;">Cancele y elimine
+                                una cita indicando su número de ID.</p>
+                            <div class="d-flex flex-wrap gap-1">
+                                <button class="btn btn-sm"
+                                    style="background: rgba(229,57,53,0.12); color: #c62828; border: 1px solid rgba(229,57,53,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                    onclick="usarEjemplo('Eliminar cita 5')">
+                                    🗑️ Eliminar ID 5
+                                </button>
+                                <button class="btn btn-sm"
+                                    style="background: rgba(229,57,53,0.12); color: #c62828; border: 1px solid rgba(229,57,53,0.25); border-radius: 20px; font-size: 0.72rem; padding: 3px 10px;"
+                                    onclick="usarEjemplo('Cancelar cita 10')">
+                                    ❌ Cancelar ID 10
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ ÁREA DE CHAT ═══ -->
+                <div id="doctorChatBox"
+                    style="border: 1px solid #dee2e6; border-radius: 14px; height: calc(100vh - 580px); min-height: 250px; overflow-y: auto; padding: 20px; background: linear-gradient(180deg, #f0f4f8 0%, #ffffff 100%); margin-bottom: 15px; box-shadow: inset 0 2px 8px rgba(0,0,0,0.04);">
+                    <div style="text-align: center; color: #adb5bd; padding: 30px;">
+                        <div
+                            style="width: 64px; height: 64px; background: linear-gradient(135deg, #007bff, #0056b3); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; box-shadow: 0 4px 15px rgba(0,123,255,0.3);">
+                            <i class="bi bi-chat-dots" style="font-size: 1.6rem; color: white;"></i>
+                        </div>
+                        <p class="mt-2" style="font-size: 1rem; font-weight: 500; color: #6c757d;">Seleccione una
+                            acción o escriba su consulta</p>
+                        <p style="font-size: 0.82rem; color: #adb5bd;">Puede ver, crear, modificar o eliminar citas
+                            desde aquí</p>
+                    </div>
+                </div>
+
+                <!-- ═══ BARRA DE ENTRADA ═══ -->
+                <div class="input-group"
+                    style="box-shadow: 0 2px 10px rgba(0,0,0,0.08); border-radius: 25px; overflow: hidden;">
+                    <input type="text" id="doctorMensaje" class="form-control"
+                        placeholder="Escriba su consulta sobre citas... (ej: 'Mis citas', 'Crear cita para...')"
+                        onkeypress="if(event.key==='Enter') enviarMensajeDoctor()"
+                        style="border-radius: 25px 0 0 25px; border: 2px solid #dee2e6; border-right: none; padding: 12px 20px; font-size: 0.95rem;">
+                    <button class="btn btn-primary" onclick="enviarMensajeDoctor()"
+                        style="border-radius: 0 25px 25px 0; padding: 12px 24px; font-weight: 500; background: linear-gradient(135deg, #007bff, #0056b3); border: none;">
+                        <i class="bi bi-send-fill"></i> Enviar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ DASHBOARD POWER BI CORREGIDO -->
+        <div id="dashboardPowerBI" class="tab-pane">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h2 style="color: #0056b3; border-bottom: none;">📊 Dashboard Nutri Vida</h2>
+                <p style="color: #6c757d;">Visualiza métricas clave sobre los usuarios, estadísticas y tendencias en
+                    nuestra comunidad.</p>
+            </div>
+            <div class="dashboard-container">
+                <iframe
+                    src="https://app.powerbi.com/view?r=eyJrIjoiMzM3NzhiNTUtZTE3MS00ZWMxLTg2MTEtNTIyYTk1ZTgxYjFmIiwidCI6IjlkMTJiZjNmLWU0ZjYtNDdhYi05MTJmLTFhMmYwZmM0OGFhNCIsImMiOjR9"
+                    allowFullScreen="true">
+                </iframe>
+            </div>
+            <p class="text-muted text-center mt-3" style="font-size: 0.85rem; color: #6c757d;">
+                <i class="bi bi-info-circle"></i> Los datos se actualizan automáticamente desde nuestra base de
+                datos.
+            </p>
+        </div>
+    </div>
     </div>
 
     <!-- Bootstrap JS -->
@@ -1338,41 +1372,42 @@
 
         // ✅ NUEVA FUNCIÓN: Conectada al modelo WEKA real (backend)
 
+
         async function calculatePrediction() {
 
             const valor = (id) =>
                 document.getElementById(id)?.value ?? "";
 
-            const genero = document.querySelector(
-                'input[name="gender"]:checked'
-            )?.value;
-
             const datos = {
-                age: Number(valor("age")),
-                gender: genero,
                 motivation: valor("motivation"),
                 previousDiets: Number(valor("previousDiets")),
                 supportSystem: valor("supportSystem"),
-                activityLevel: valor("activityLevel"),
                 stressLevel: valor("stressLevel"),
                 dietComplexity: valor("dietComplexity"),
                 foodPreferences: valor("foodPreferences")
             };
 
             if (
-                !genero ||
-                !valor("age") ||
                 !valor("previousDiets") ||
                 !datos.motivation ||
                 !datos.supportSystem ||
-                !datos.activityLevel ||
                 !datos.stressLevel ||
                 !datos.dietComplexity ||
                 !datos.foodPreferences
             ) {
-                alert("Completa todos los campos.");
+                alert("Completa las seis variables de predicción.");
                 return;
             }
+
+            if (
+                !Number.isInteger(datos.previousDiets) ||
+                datos.previousDiets < 0 ||
+                datos.previousDiets > 3
+            ) {
+                alert("Los intentos previos deben estar entre 0 y 3.");
+                return;
+            }
+
 
             const csrf = document.querySelector(
                 'meta[name="_csrf"]'
@@ -1427,7 +1462,10 @@
 
                 document.getElementById(
                     "resultDescription"
-                ).textContent = resultado.descripcion;
+
+                ).textContent = resultado.descripcion || resultado.aviso ||
+                    "Predicción experimental calculada con datos sintéticos.";
+
 
                 document.getElementById(
                     "resultLevel"
@@ -1437,18 +1475,8 @@
                     "resultIcon"
                 ).textContent = "📊";
 
-                const factores = document.getElementById("keyFactors");
-                if (factores) {
-                    factores.textContent =
-                        "El radar muestra el perfil descriptivo del paciente.";
-                }
+                mostrarFactoresYRecomendaciones(datos);
 
-                const recomendaciones =
-                    document.getElementById("recommendations");
-
-                if (recomendaciones) {
-                    recomendaciones.replaceChildren();
-                }
 
                 const contenedor = document.getElementById(
                     "predictionResult"
@@ -1502,63 +1530,270 @@
         }
 
 
+        function mostrarFactoresYRecomendaciones(datos) {
+
+            const factoresContenedor =
+                document.getElementById("keyFactors");
+
+            const recomendacionesContenedor =
+                document.getElementById("recommendations");
+
+            const factores = [
+                {
+                    nombre: "Motivación",
+                    valor: {
+                        high: "Alta",
+                        medium: "Media",
+                        low: "Baja"
+                    }[datos.motivation],
+                    tipo: {
+                        high: "positivo",
+                        medium: "neutro",
+                        low: "negativo"
+                    }[datos.motivation]
+                },
+                {
+                    nombre: "Intentos previos",
+                    valor: String(datos.previousDiets),
+                    tipo: datos.previousDiets === 0
+                        ? "positivo"
+                        : datos.previousDiets === 1
+                            ? "neutro"
+                            : "negativo"
+                },
+                {
+                    nombre: "Sistema de apoyo",
+                    valor: {
+                        strong: "Fuerte",
+                        moderate: "Moderado",
+                        weak: "Débil"
+                    }[datos.supportSystem],
+                    tipo: {
+                        strong: "positivo",
+                        moderate: "neutro",
+                        weak: "negativo"
+                    }[datos.supportSystem]
+                },
+                {
+                    nombre: "Estrés",
+                    valor: {
+                        low: "Bajo",
+                        moderate: "Moderado",
+                        high: "Alto"
+                    }[datos.stressLevel],
+                    tipo: {
+                        low: "positivo",
+                        moderate: "neutro",
+                        high: "negativo"
+                    }[datos.stressLevel]
+                },
+                {
+                    nombre: "Complejidad",
+                    valor: {
+                        simple: "Simple",
+                        moderate: "Moderada",
+                        complex: "Compleja"
+                    }[datos.dietComplexity],
+                    tipo: {
+                        simple: "positivo",
+                        moderate: "neutro",
+                        complex: "negativo"
+                    }[datos.dietComplexity]
+                },
+                {
+                    nombre: "Afinidad",
+                    valor: {
+                        high: "Alta",
+                        moderate: "Moderada",
+                        low: "Baja"
+                    }[datos.foodPreferences],
+                    tipo: {
+                        high: "positivo",
+                        moderate: "neutro",
+                        low: "negativo"
+                    }[datos.foodPreferences]
+                }
+            ];
+
+            if (factoresContenedor) {
+
+                factoresContenedor.replaceChildren();
+
+                const estilos = {
+                    positivo: "factor-positive",
+                    neutro: "factor-neutral",
+                    negativo: "factor-negative"
+                };
+
+                factores.forEach(factor => {
+
+                    const etiqueta =
+                        document.createElement("span");
+
+                    etiqueta.className =
+                        "factor-badge " + estilos[factor.tipo];
+
+                    etiqueta.textContent =
+                        factor.nombre + ": " + factor.valor;
+
+                    factoresContenedor.appendChild(etiqueta);
+                });
+            }
+
+            const recomendaciones = [];
+
+            if (datos.motivation === "low") {
+                recomendaciones.push(
+                    "Trabajar con el paciente en metas pequeñas y alcanzables."
+                );
+            }
+
+            if (datos.motivation === "medium") {
+                recomendaciones.push(
+                    "Reforzar la motivación mediante objetivos de corto plazo."
+                );
+            }
+
+            if (datos.previousDiets >= 2) {
+                recomendaciones.push(
+                    "Revisar las dificultades de intentos anteriores y ajustar el plan."
+                );
+            }
+
+            if (datos.supportSystem === "weak") {
+                recomendaciones.push(
+                    "Explorar una red de apoyo familiar, social o profesional."
+                );
+            }
+
+            if (datos.supportSystem === "moderate") {
+                recomendaciones.push(
+                    "Fortalecer el acompañamiento durante el seguimiento."
+                );
+            }
+
+            if (datos.stressLevel === "high") {
+                recomendaciones.push(
+                    "Considerar estrategias para manejar el estrés durante el proceso."
+                );
+            }
+
+            if (datos.dietComplexity === "complex") {
+                recomendaciones.push(
+                    "Revisar si el plan puede simplificarse y adaptarse a la rutina."
+                );
+            }
+
+            if (datos.foodPreferences === "low") {
+                recomendaciones.push(
+                    "Adaptar las opciones alimentarias a las preferencias del paciente."
+                );
+            }
+
+            if (recomendaciones.length === 0) {
+                recomendaciones.push(
+                    "Mantener el seguimiento y revisar periódicamente las necesidades del paciente.",
+                    "Conservar los hábitos favorables y ajustar las metas cuando sea necesario."
+                );
+            }
+
+            if (recomendacionesContenedor) {
+
+                recomendacionesContenedor.replaceChildren();
+
+                recomendaciones.forEach(texto => {
+
+                    const elemento =
+                        document.createElement("li");
+
+                    elemento.className = "list-group-item";
+                    elemento.textContent = texto;
+
+                    recomendacionesContenedor.appendChild(elemento);
+                });
+            }
+        }
+
         // Función para validar el formulario de predicción
+
         function validatePredictionForm() {
+
             const requiredFields = [
-                'patientSelect', 'age', 'motivation', 'previousDiets', 'supportSystem',
-                'activityLevel', 'stressLevel', 'dietComplexity', 'foodPreferences'
+                "motivation",
+                "previousDiets",
+                "supportSystem",
+                "stressLevel",
+                "dietComplexity",
+                "foodPreferences"
             ];
 
             for (const fieldId of requiredFields) {
+
                 const field = document.getElementById(fieldId);
-                if (!field || !field.value) {
-                    showAlert('Por favor, complete todos los campos del formulario.');
+
+                if (!field || field.value.trim() === "") {
+
+                    showAlert(
+                        "Por favor, complete las seis variables de predicción."
+                    );
+
                     field?.focus();
                     return false;
                 }
             }
 
-            // Validar género
-            const gender = document.querySelector('input[name="gender"]:checked');
-            if (!gender) {
-                showAlert('Por favor, seleccione el género del paciente.');
-                return false;
-            }
+            const intentos = Number(
+                document.getElementById("previousDiets").value
+            );
 
-            // Validar edad
-            const age = parseInt(document.getElementById('age').value);
-            if (age < 1 || age > 120) {
-                showAlert('Por favor, ingrese una edad válida (1-120 años).');
-                document.getElementById('age').focus();
-                return false;
-            }
+            if (
+                !Number.isInteger(intentos) ||
+                intentos < 0 ||
+                intentos > 3
+            ) {
 
-            // Validar intentos previos de dieta
-            const previousDiets = parseInt(document.getElementById('previousDiets').value);
-            if (previousDiets < 0 || previousDiets > 50) {
-                showAlert('Por favor, ingrese un número válido de intentos previos (0-50).');
-                document.getElementById('previousDiets').focus();
+                showAlert(
+                    "Los intentos previos deben estar entre 0 y 3."
+                );
+
+                document.getElementById(
+                    "previousDiets"
+                ).focus();
+
                 return false;
             }
 
             return true;
         }
 
+
         // Función para obtener datos del formulario
+
         function getFormData() {
+
             return {
-                patientId: document.getElementById('patientSelect').value,
-                age: parseInt(document.getElementById('age').value),
-                gender: document.querySelector('input[name="gender"]:checked').value,
-                motivation: document.getElementById('motivation').value,
-                previousDiets: parseInt(document.getElementById('previousDiets').value),
-                supportSystem: document.getElementById('supportSystem').value,
-                activityLevel: document.getElementById('activityLevel').value,
-                stressLevel: document.getElementById('stressLevel').value,
-                dietComplexity: document.getElementById('dietComplexity').value,
-                foodPreferences: document.getElementById('foodPreferences').value
+
+                motivation:
+                    document.getElementById("motivation").value,
+
+                previousDiets:
+                    Number(document.getElementById("previousDiets").value),
+
+                supportSystem:
+                    document.getElementById("supportSystem").value,
+
+                stressLevel:
+                    document.getElementById("stressLevel").value,
+
+                dietComplexity:
+                    document.getElementById("dietComplexity").value,
+
+                foodPreferences:
+                    document.getElementById("foodPreferences").value
+
             };
         }
+
 
         // Función para mostrar alertas
         function showAlert(message) {
@@ -1926,138 +2161,150 @@
     </script>
     <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 
-<script>
-async function cargarPacientesEnPrediccion() {
-    const select = document.getElementById("patientSelect");
-    const estado = document.getElementById("estadoPacientesSelect");
+    <script>
+        async function cargarPacientesEnPrediccion() {
+            const select = document.getElementById("patientSelect");
+            const estado = document.getElementById("estadoPacientesSelect");
 
-    if (!select) return;
+            if (!select) return;
 
-    select.disabled = true;
-    select.replaceChildren(
-        new Option("Cargando pacientes...", "")
-    );
-
-    try {
-        const pacientes = new Map();
-
-        // Cargar varias paginas porque la API utiliza paginacion.
-        // Limite preventivo para no cargar miles de opciones.
-        for (let pagina = 0; pagina < 30; pagina++) {
-            const respuesta = await fetch(
-                `/api/usuarios/rol/1?page=${pagina}&size=100`,
-                { credentials: "same-origin", cache: "no-store" }
+            select.disabled = true;
+            select.replaceChildren(
+                new Option("Cargando pacientes...", "")
             );
 
-            if (!respuesta.ok) {
-                throw new Error(
-                    "Error HTTP " + respuesta.status
+            try {
+                const pacientes = new Map();
+
+                // Cargar varias paginas porque la API utiliza paginacion.
+                // Limite preventivo para no cargar miles de opciones.
+                for (let pagina = 0; pagina < 30; pagina++) {
+
+                    const respuesta = await fetch(
+                        `/api/usuarios/rol/1?page=${pagina}&size=20&search=`,
+                        {
+                            method: "GET",
+                            credentials: "same-origin",
+                            cache: "no-store",
+                            headers: {
+                                "Accept": "application/json"
+                            }
+                        }
+                    );
+
+
+                    if (!respuesta.ok) {
+                        throw new Error(
+                            "Error HTTP " + respuesta.status
+                        );
+                    }
+
+                    const datos = await respuesta.json();
+
+                    // Compatible con listas y respuestas paginadas comunes.
+                    const lista = [
+                        datos.content,
+                        datos.usuarios,
+                        datos.data?.content,
+                        datos.data,
+                        datos
+                    ].find(Array.isArray);
+
+                    if (!lista) {
+                        throw new Error(
+                            "Formato de respuesta no reconocido"
+                        );
+                    }
+
+                    const cantidadAnterior = pacientes.size;
+
+                    for (const usuario of lista) {
+                        const id =
+                            usuario.id ??
+                            usuario.usuario_id ??
+                            usuario.usuarioId;
+
+                        const nombre = String(
+                            usuario.nombre ?? ""
+                        ).trim();
+
+                        const apellido = String(
+                            usuario.apellido ?? ""
+                        ).trim();
+
+                        if (id == null) continue;
+
+                        pacientes.set(
+                            String(id),
+                            `${nombre} ${apellido}`.trim()
+                        );
+
+                        if (pacientes.size >= 500) break;
+                    }
+
+                    if (
+                        lista.length === 0 ||
+                        pacientes.size === cantidadAnterior ||
+                        pacientes.size >= 500 ||
+                        datos.last === true ||
+                        (
+                            typeof datos.totalPages === "number" &&
+                            pagina + 1 >= datos.totalPages
+                        )
+                    ) {
+                        break;
+                    }
+                }
+
+                select.replaceChildren(
+                    new Option("-- Seleccione un paciente --", "")
                 );
-            }
 
-            const datos = await respuesta.json();
+                const ordenados = [...pacientes.entries()]
+                    .sort((a, b) =>
+                        a[1].localeCompare(b[1], "es")
+                    );
 
-            // Compatible con listas y respuestas paginadas comunes.
-            const lista = [
-                datos.content,
-                datos.usuarios,
-                datos.data?.content,
-                datos.data,
-                datos
-            ].find(Array.isArray);
+                for (const [id, nombre] of ordenados) {
+                    select.add(
+                        new Option(`${nombre} (ID: ${id})`, id)
+                    );
+                }
 
-            if (!lista) {
-                throw new Error(
-                    "Formato de respuesta no reconocido"
-                );
-            }
+                select.disabled = ordenados.length === 0;
 
-            const cantidadAnterior = pacientes.size;
+                estado.textContent =
+                    `Se cargaron ${ordenados.length} pacientes ` +
+                    "desde MySQL.";
 
-            for (const usuario of lista) {
-                const id =
-                    usuario.id ??
-                    usuario.usuario_id ??
-                    usuario.usuarioId;
+                if (ordenados.length === 0) {
+                    estado.textContent =
+                        "No se encontraron pacientes registrados.";
+                }
 
-                const nombre = String(
-                    usuario.nombre ?? ""
-                ).trim();
-
-                const apellido = String(
-                    usuario.apellido ?? ""
-                ).trim();
-
-                if (id == null) continue;
-
-                pacientes.set(
-                    String(id),
-                    `${nombre} ${apellido}`.trim()
+            } catch (error) {
+                console.error(
+                    "Error al cargar pacientes para prediccion:",
+                    error
                 );
 
-                if (pacientes.size >= 500) break;
-            }
+                select.replaceChildren(
+                    new Option("Error al cargar pacientes", "")
+                );
 
-            if (
-                lista.length === 0 ||
-                pacientes.size === cantidadAnterior ||
-                pacientes.size >= 500 ||
-                datos.last === true ||
-                (
-                    typeof datos.totalPages === "number" &&
-                    pagina + 1 >= datos.totalPages
-                )
-            ) {
-                break;
+
+                estado.textContent =
+                    "No se pudo consultar la lista de pacientes: " +
+                    error.message;
+
             }
         }
 
-        select.replaceChildren(
-            new Option("-- Seleccione un paciente --", "")
+        document.addEventListener(
+            "DOMContentLoaded",
+            cargarPacientesEnPrediccion
         );
-
-        const ordenados = [...pacientes.entries()]
-            .sort((a, b) =>
-                a[1].localeCompare(b[1], "es")
-            );
-
-        for (const [id, nombre] of ordenados) {
-            select.add(
-                new Option(`${nombre} (ID: ${id})`, id)
-            );
-        }
-
-        select.disabled = ordenados.length === 0;
-
-        estado.textContent =
-            `Se cargaron ${ordenados.length} pacientes ` +
-            "desde MySQL.";
-
-        if (ordenados.length === 0) {
-            estado.textContent =
-                "No se encontraron pacientes registrados.";
-        }
-
-    } catch (error) {
-        console.error(
-            "Error al cargar pacientes para prediccion:",
-            error
-        );
-
-        select.replaceChildren(
-            new Option("Error al cargar pacientes", "")
-        );
-
-        estado.textContent =
-            "No se pudo consultar la lista de pacientes.";
-    }
-}
-
-document.addEventListener(
-    "DOMContentLoaded",
-    cargarPacientesEnPrediccion
-);
-</script>
+    </script>
 
 </body>
 
